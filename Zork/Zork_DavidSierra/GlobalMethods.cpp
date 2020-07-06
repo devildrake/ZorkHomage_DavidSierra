@@ -1,6 +1,6 @@
 #include "GlobalMethods.h"
 #include <cctype>
-
+#include <iostream>
 
 void TranslateToArguments(const string&input, vector<string>&resultingArgs) {
 	int i = 0;
@@ -44,5 +44,9 @@ bool CompareStrings(const string&str1, const string* str2) {
 		}
 	}
 	return false;
+}
+
+void Println(const string& str1) {
+	cout << str1 << endl;
 }
 

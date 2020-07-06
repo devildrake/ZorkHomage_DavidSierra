@@ -6,6 +6,7 @@ using namespace std;
 
 class Room;
 class Item;
+class Container;
 
 class Player : public Creature {
 public:
@@ -13,7 +14,10 @@ public:
 	~Player();
 
 	Room* GetRoom() const;
-	bool PlayerInRoom() const;
+	bool IsPlayerInRoom() const;
 	bool IsAlive() const;
 	void Look() const;
+	void LookSelf() const;
+	void CheckInventory() const;
+	void Go(const char*dir);
 };

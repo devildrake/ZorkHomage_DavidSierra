@@ -1,15 +1,15 @@
 #pragma once
 #include <string>
-#include <list>
 #include <iostream>
-
+#include <list>
+#include "GlobalMethods.h"
 using namespace std;
 
-enum EntityType
-{
+enum EntityType {
 	ENTITY,
 	ROOM,
 	EXIT,
+	CONTAINER,
 	ITEM,
 	CREATURE,
 	NPC,
@@ -17,8 +17,7 @@ enum EntityType
 };
 
 //Base class from which all elements inherit some fields (name, description... as well as methods that all entitites must implement)
-class Entity
-{
+class Entity {
 public:
 	EntityType type;
 	std::string name;
@@ -26,9 +25,10 @@ public:
 
 	Entity* parent;
 	list<Entity*> entitiesContained;
-
 	Entity(const char* name, const char* description, Entity* parent);
 	virtual ~Entity();
 	virtual void Look() const;
 
+	void SetNewParent(Entity*e);
+	Entity* GetChildNamed(const char* targetName)const;
 };

@@ -29,8 +29,6 @@ int main()
 				auxString += commandArguments[i];
 				auxString += " ";
 			}
-			cout << "Trying to parse " + auxString + " as commands";
-			cout << endl;
 
 			if (!aWorld.TryParseCommand(commandArguments)) {
 				if (CompareStrings(player_input, exitStrings)) {
