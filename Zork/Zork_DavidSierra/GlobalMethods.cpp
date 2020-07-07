@@ -8,8 +8,7 @@ void TranslateToArguments(const string&input, vector<string>&resultingArgs) {
 	while (i < input.length()) {
 		if (input[i] != ' ') {
 			tmp += input[i];
-		}
-		else {
+		} else {
 			resultingArgs.push_back(tmp);
 			tmp = string("");
 		}
@@ -20,8 +19,7 @@ void TranslateToArguments(const string&input, vector<string>&resultingArgs) {
 	}
 }
 
-bool CompareCharInsensitive(const char & c1, const char & c2)
-{
+bool CompareCharInsensitive(const char & c1, const char & c2) {
 	if (c1 == c2)
 		return true;
 	else if (std::toupper(c1) == std::toupper(c2))
@@ -29,17 +27,15 @@ bool CompareCharInsensitive(const char & c1, const char & c2)
 	return false;
 }
 
-bool CompareStrings(const string & str1, const string &str2)
-{
+bool CompareStrings(const string & str1, const string &str2) {
 	return ((str1.size() == str2.size()) &&
 		std::equal(str1.begin(), str1.end(), str2.begin(), &CompareCharInsensitive));
 }
 
 bool CompareStrings(const string&str1, const string* str2) {
-
-	for (size_t i = 0; i < str2->length(); i++)
-	{
+	for (size_t i = 0; i < str2->length(); i++) {
 		if (CompareStrings(str1, str2[i])) {
+			//cout << str1 << "==" << *str2 << endl;
 			return true;
 		}
 	}

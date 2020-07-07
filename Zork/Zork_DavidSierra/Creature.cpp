@@ -1,6 +1,9 @@
 #include "Creature.h"
 #include "Room.h"
 #include "Container.h"
+#include "Equipable.h"
+#include "Consumable.h"
+
 Creature::Creature(const char* name, const char* desc, Room* initialRoom, int maxHealth, int startingHealth) :Entity(name, desc, (Entity*)initialRoom) {
 	this->name = name;
 	description = desc;
@@ -9,6 +12,108 @@ Creature::Creature(const char* name, const char* desc, Room* initialRoom, int ma
 	max_health = maxHealth;
 	health = startingHealth;
 }
+
+void Creature::UnEquip(vector<string>args) {
+	Entity* objectToUnEquip = GetChildNamed(args[1].c_str());
+
+	if (objectToUnEquip != nullptr) {
+		if (objectToUnEquip->entityType == EntityType::ITEM) {
+			Item* itemToUnEquip = (Item*)(objectToUnEquip);
+			switch (itemToUnEquip->itemType) {
+			case ItemType::ARMOUR: {
+				Equipable* equipableToEquip = ((Equipable*)itemToUnEquip);
+				if (armour != nullptr) {
+					UnEquip(armour);
+					armour = nullptr;
+					Println(name + " unequipped " + armour->name);
+				} else {
+					Println(name + " doesn't have " + itemToUnEquip->name + " equipped...");
+				}
+			}
+			case ItemType::WEAPON: {
+				Equipable* equipableToEquip = ((Equipable*)itemToUnEquip);
+				if (weapon != nullptr) {
+					UnEquip(weapon);
+					weapon = nullptr;
+					Println(name + " unequipped " + weapon->name);
+				} else {
+					Println(name + " doesn't have " + itemToUnEquip->name + " equipped...");
+				}
+				break;
+			}default: {
+				Println(name + " can't unequip " + itemToUnEquip->name);
+				break;
+			}
+			}
+		} else {
+			Println(name + " can't unequip " + objectToUnEquip->name);
+		}
+	} else {
+		Println(name + " doesn't own " + args[1]);
+
+	}
+}
+
+void Creature::UnEquip(Equipable* eq) {
+	bonusAttack.first -= armour->attack_bonus.first;
+	bonusAttack.second -= armour->attack_bonus.second;
+	bonusDefense.first -= armour->defense_bonus.first;
+	bonusDefense.second -= armour->defense_bonus.second;
+}
+
+void Creature::Equip(Equipable* e) {
+	bonusAttack.first += e->attack_bonus.first;
+	bonusAttack.second += e->attack_bonus.second;
+	bonusDefense.first += e->defense_bonus.first;
+	bonusDefense.second += e->defense_bonus.second;
+}
+
+void Creature::Equip(vector<string>args) {
+	Entity* objectToEquip = GetChildNamed(args[1].c_str());
+	if (objectToEquip != nullptr) {
+		if (objectToEquip->entityType == EntityType::ITEM) {
+			Item* itemToEquip = ((Item*)objectToEquip);
+
+			switch (itemToEquip->itemType) {
+			case ItemType::ARMOUR: {
+				Equipable* equipableToEquip = ((Equipable*)itemToEquip);
+				if (armour != nullptr) {
+					UnEquip(armour);
+				}
+				Equip(equipableToEquip);
+				armour = equipableToEquip;
+				Println(name + " equips " + armour->name);
+			}
+			case ItemType::WEAPON: {
+				Equipable* equipableToEquip = ((Equipable*)itemToEquip);
+				if (weapon != nullptr) {
+					UnEquip(weapon);
+				}
+				Equip(equipableToEquip);
+				weapon = equipableToEquip;
+				Println(name + " weapon " + weapon->name);
+				break;
+			}default: {
+				Println(name + " can't equip " + itemToEquip->name);
+				break;
+			}
+			}
+		} else {
+			Println(name + " can't equip " + objectToEquip->name);
+		}
+	} else {
+		Println(name + " doesn't own" + objectToEquip->name);
+	}
+}
+
+void Creature::Inspect()const {
+	Println("==========================");
+	Println(name);
+	cout << " -Health:" << health << "/" << max_health << endl
+		<< " -Attack:" << baseAttack.first + bonusAttack.first << " - " << baseAttack.second + bonusAttack.second << endl
+		<< " -Defense:" << baseDefense.first + bonusDefense.first << " - " << baseDefense.second + bonusDefense.second << endl;
+}
+
 
 Creature::Creature(const char* name, const char* desc, Room* initialRoom) :Entity(name, desc, (Entity*)initialRoom) {
 	max_health = DEFAULT_MAX_HEALTH;
@@ -32,21 +137,23 @@ void Creature::Take(vector<string>args) {
 	if (args.size() == 2) {
 		Entity* eToTake = GetRoom()->GetChildNamed(args[1].c_str());
 		if (eToTake != nullptr) {
-			if (eToTake->type == EntityType::ENTITY || eToTake->type == EntityType::ITEM || (eToTake->type == EntityType::CONTAINER && ((Container*)eToTake)->pickeable)) {
+			if (eToTake->entityType == EntityType::ENTITY || eToTake->entityType == EntityType::ITEM || (eToTake->entityType == EntityType::CONTAINER && ((Container*)eToTake)->pickeable)) {
 				eToTake->SetNewParent(this);
 				Println(name + " took " + eToTake->name);
 			} else {
 				Println(name + " can't pick " + eToTake->name);
 			}
+		} else {
+			Println(name + " found no " + args[1] + " to be picked");
 		}
 	} else if (args.size() == 4) {
 		Entity* eToTakeFrom = GetRoom()->GetChildNamed(args[3].c_str());
 		if (eToTakeFrom != nullptr) {
-			if (eToTakeFrom->type == EntityType::CONTAINER) {
+			if (eToTakeFrom->entityType == EntityType::CONTAINER) {
 				if (!((Container*)eToTakeFrom)->isLocked) {
 					Entity* eToTake = eToTakeFrom->GetChildNamed(args[1].c_str());
 					if (eToTake != nullptr) {
-						if (eToTake->type == EntityType::ENTITY || eToTake->type == EntityType::ITEM || (eToTake->type == EntityType::CONTAINER && ((Container*)eToTake)->pickeable)) {
+						if (eToTake->entityType == EntityType::ENTITY || eToTake->entityType == EntityType::ITEM || (eToTake->entityType == EntityType::CONTAINER && ((Container*)eToTake)->pickeable)) {
 							eToTake->SetNewParent(this);
 							Println(name + " took " + eToTake->name + " from " + eToTakeFrom->name);
 						} else {
@@ -87,7 +194,7 @@ void Creature::Drop(vector<string>args) {
 		if (eToDropInto != nullptr) {
 			Entity* eToDrop = GetChildNamed(args[1].c_str());
 			if (eToDrop != nullptr) {
-				if (eToDropInto->type == EntityType::CONTAINER) {
+				if (eToDropInto->entityType == EntityType::CONTAINER) {
 					if (!((Container*)eToDropInto)->isLocked) {
 						eToDrop->SetNewParent(eToDropInto);
 						Println(name + " put " + eToDrop->name + " inside " + eToDropInto->name);
@@ -111,7 +218,7 @@ void Creature::UnLock(vector<string> args) {
 		if (objToOpenWith != nullptr) {
 			Entity* entityToOpen = (Entity*)GetRoom()->GetChildNamed(args[1].c_str());
 			if (entityToOpen != nullptr) {
-				if (entityToOpen->type == EntityType::CONTAINER) {
+				if (entityToOpen->entityType == EntityType::CONTAINER) {
 					Container* containerToOpen = (Container*)entityToOpen;
 					if (containerToOpen->keyToUnlock != nullptr && containerToOpen->isLocked) {
 						if ((containerToOpen)->keyToUnlock == objToOpenWith) {

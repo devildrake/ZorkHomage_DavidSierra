@@ -4,7 +4,7 @@
 using namespace std;
 
 class Room;
-class Item;
+class Equipable;
 
 #define DEFAULT_MAX_HEALTH 25;
 
@@ -12,6 +12,10 @@ class Creature : public Entity {
 protected:
 	int max_health;
 	int health;
+	pair<int, int> baseAttack;
+	pair<int, int> baseDefense;
+	pair<int, int> bonusAttack;
+	pair<int, int> bonusDefense;
 public:
 	Creature(const char* name, const char* desc, Room* initialRoom, int, int);
 	Creature(const char* name, const char* desc, Room* initialRoom);
@@ -22,8 +26,13 @@ public:
 	void Take(vector<string>args);
 	void Drop(vector<string>args);
 	void UnLock(vector<string>args);
+	void Equip(vector<string>args);
+	void Equip(Equipable* e);
+	void UnEquip(vector<string>args);
+	void UnEquip(Equipable* e);
+	void Inspect()const;
 	Room* GetRoom() const;
 	Creature* combat_target;
-	Item* weapon;
-	Item* armour;
+	Equipable* weapon;
+	Equipable* armour;
 };

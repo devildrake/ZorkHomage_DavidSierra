@@ -5,7 +5,7 @@
 #include "Exit.h"
 
 Player::Player(const char* name, const char* desc, Room* initialRoom) : Creature(name, desc, initialRoom) {
-	type = EntityType::PLAYER;
+	entityType = EntityType::PLAYER;
 }
 
 Player::~Player() {
@@ -30,6 +30,8 @@ bool Player::IsPlayerInRoom() const {
 bool Player::IsAlive() const {
 	return false;
 }
+
+
 
 void Player::Go(const char* dir) {
 	Exit* e = GetRoom()->GetExitInDirection(dir);

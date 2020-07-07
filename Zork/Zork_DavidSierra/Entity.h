@@ -19,7 +19,7 @@ enum EntityType {
 //Base class from which all elements inherit some fields (name, description... as well as methods that all entitites must implement)
 class Entity {
 public:
-	EntityType type;
+	EntityType entityType;
 	std::string name;
 	std::string description;
 
@@ -31,4 +31,5 @@ public:
 
 	void SetNewParent(Entity*e);
 	Entity* GetChildNamed(const char* targetName)const;
+	vector<Entity*> GetChildrenOfType(EntityType type)const;
 };

@@ -16,7 +16,7 @@ void Room::Look() const {
 	for (list<Entity*>::const_iterator it = entitiesContained.begin(); it != entitiesContained.cend(); ++it) {
 		Entity* e = *it;
 
-		switch (e->type) {
+		switch (e->entityType) {
 		case EntityType::NPC: {
 			Println("You can see someone: " + e->name);
 			break;
@@ -50,7 +50,7 @@ Exit* Room::GetExitInDirection(const char* dir) const {
 	if (direction != Exit::Direction::NONE) {
 		for (list<Entity*>::const_iterator it = entitiesContained.begin(); it != entitiesContained.cend() && res == nullptr; ++it) {
 			Entity* e = *it;
-			if (e->type == EntityType::EXIT) {
+			if (e->entityType == EntityType::EXIT) {
 				Exit* exit = (Exit*)e;
 
 				if (exit->from == this) {

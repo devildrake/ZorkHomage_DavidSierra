@@ -8,11 +8,15 @@ Exit::Exit(const char* name, const char* desc, Exit::Direction aDirection, Room*
 	this->to = to;
 	from->entitiesContained.push_back(this);
 	to->entitiesContained.push_back(this);
-	type = EntityType::EXIT;
+	entityType = EntityType::EXIT;
 }
 
 Exit::~Exit() {
-
+	if (from != nullptr) {
+		from->entitiesContained.remove(this);
+	} else {
+		to->entitiesContained.remove(this);
+	}
 }
 
 

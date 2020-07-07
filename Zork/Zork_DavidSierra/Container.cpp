@@ -1,8 +1,7 @@
 #include "Container.h"
-#include "Item.h"
 
 Container::Container(const char*name, const char*desc, Entity*parent, Entity* keyToUnlock) :Entity(name, desc, parent) {
-	type = EntityType::CONTAINER;
+	entityType = EntityType::CONTAINER;
 
 	if (keyToUnlock != nullptr) {
 		this->keyToUnlock = keyToUnlock;
