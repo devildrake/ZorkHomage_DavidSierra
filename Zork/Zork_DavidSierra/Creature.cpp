@@ -4,13 +4,18 @@
 #include "Equipable.h"
 #include "Consumable.h"
 
-Creature::Creature(const char* name, const char* desc, Room* initialRoom, int maxHealth, int startingHealth) :Entity(name, desc, (Entity*)initialRoom) {
+Creature::Creature(const char* name, const char* desc, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M) :Entity(name, desc, (Entity*)initialRoom) {
 	this->name = name;
 	description = desc;
 	this->parent = (Entity*)initialRoom;
 	this->parent->entitiesContained.push_back(this);
 	max_health = maxHealth;
 	health = startingHealth;
+	baseAttack.first = baseAttack_m;
+	baseAttack.second = baseAttack_M;
+	baseDefense.first = baseDefense_m;
+	baseDefense.second = baseDefense_M;
+	entityType = EntityType::CREATURE;
 }
 
 void Creature::UnEquip(vector<string>args) {
@@ -55,10 +60,10 @@ void Creature::UnEquip(vector<string>args) {
 }
 
 void Creature::UnEquip(Equipable* eq) {
-	bonusAttack.first -= armour->attack_bonus.first;
-	bonusAttack.second -= armour->attack_bonus.second;
-	bonusDefense.first -= armour->defense_bonus.first;
-	bonusDefense.second -= armour->defense_bonus.second;
+	bonusAttack.first -= eq->attack_bonus.first;
+	bonusAttack.second -= eq->attack_bonus.second;
+	bonusDefense.first -= eq->defense_bonus.first;
+	bonusDefense.second -= eq->defense_bonus.second;
 }
 
 void Creature::Equip(Equipable* e) {
@@ -77,21 +82,29 @@ void Creature::Equip(vector<string>args) {
 			switch (itemToEquip->itemType) {
 			case ItemType::ARMOUR: {
 				Equipable* equipableToEquip = ((Equipable*)itemToEquip);
-				if (armour != nullptr) {
-					UnEquip(armour);
+				if (armour != equipableToEquip) {
+					if (armour != nullptr) {
+						UnEquip(armour);
+					}
+					Equip(equipableToEquip);
+					armour = equipableToEquip;
+					Println(name + " equipped " + armour->name);
+				} else {
+					Println(name + " has " + armour->name + " already equipped");
 				}
-				Equip(equipableToEquip);
-				armour = equipableToEquip;
-				Println(name + " equips " + armour->name);
 			}
 			case ItemType::WEAPON: {
 				Equipable* equipableToEquip = ((Equipable*)itemToEquip);
-				if (weapon != nullptr) {
-					UnEquip(weapon);
+				if (weapon != equipableToEquip) {
+					if (weapon != nullptr) {
+						UnEquip(weapon);
+					}
+					Equip(equipableToEquip);
+					weapon = equipableToEquip;
+					Println(name + " equipped " + weapon->name + " as weapon");
+				} else {
+					Println(name + " has " + weapon->name + " already equipped");
 				}
-				Equip(equipableToEquip);
-				weapon = equipableToEquip;
-				Println(name + " weapon " + weapon->name);
 				break;
 			}default: {
 				Println(name + " can't equip " + itemToEquip->name);
@@ -112,12 +125,6 @@ void Creature::Inspect()const {
 	cout << " -Health:" << health << "/" << max_health << endl
 		<< " -Attack:" << baseAttack.first + bonusAttack.first << " - " << baseAttack.second + bonusAttack.second << endl
 		<< " -Defense:" << baseDefense.first + bonusDefense.first << " - " << baseDefense.second + bonusDefense.second << endl;
-}
-
-
-Creature::Creature(const char* name, const char* desc, Room* initialRoom) :Entity(name, desc, (Entity*)initialRoom) {
-	max_health = DEFAULT_MAX_HEALTH;
-	health = DEFAULT_MAX_HEALTH;
 }
 
 Creature::~Creature() {
@@ -184,6 +191,13 @@ void Creature::Drop(vector<string>args) {
 	if (args.size() == 2) { //Drop on current room
 		Entity* eToDrop = GetChildNamed(args[1].c_str());
 		if (eToDrop != nullptr) {
+			if (armour == eToDrop) {
+				UnEquip(armour);
+				armour = nullptr;
+			} else if (weapon == eToDrop) {
+				UnEquip(weapon);
+				weapon = nullptr;
+			}
 			eToDrop->SetNewParent(GetRoom());
 			Println(name + " dropped " + eToDrop->name);
 		} else {
@@ -196,6 +210,13 @@ void Creature::Drop(vector<string>args) {
 			if (eToDrop != nullptr) {
 				if (eToDropInto->entityType == EntityType::CONTAINER) {
 					if (!((Container*)eToDropInto)->isLocked) {
+						if (armour == eToDrop) {
+							UnEquip(armour);
+							armour = nullptr;
+						} else if (weapon == eToDrop) {
+							UnEquip(weapon);
+							weapon = nullptr;
+						}
 						eToDrop->SetNewParent(eToDropInto);
 						Println(name + " put " + eToDrop->name + " inside " + eToDropInto->name);
 					} else {

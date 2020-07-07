@@ -19,33 +19,64 @@ const string unEquipCmds[2] = { "unequip","uneq" };
 const string examineCmds[4] = { "examine","ex","inspect","ins" };
 const string dropCmds[2] = { "drop", "place" };
 
+
 World::World() {
-	Room* cabin = new Room("Small Cabin", "A small cabin in the woods");
+	Room* cabin = new Room("Small Cabin", "A small cabin in the woods, clearly owned by a hunter");
+
+	Room* cabinOut = new Room("Outside of cabin", "You can see a small cabin made out of wood");
+
+	Room* caveEntranceRoom = new Room("Cave Entrance", "A hole in the ground appears to lead toward a cave");
+
+	Room* cave = new Room("Cave ", "A small cave lit by small holes on the walls");
+
 	Room* forest = new Room("Forest", "A beautiful forest that seems neverending");
+
 	Container* mailBox = new Container("Mailbox", "A rusty mailbox", forest);
 	Entity* key = new Entity("Key", "A small key with a horse sigil carved", (Entity*)mailBox);
 	Container* box = new Container("Box", "A small box with a horse sigil carved", forest, key);
 
 	Entity* welcomeCard = new Entity("Note", "This is a note", (Entity*)mailBox);
 	Equipable* dagger = new Equipable("Dagger", "A small rusty dagger", (Entity*)box, ItemType::WEAPON, pair<int, int>{3, 7}, pair<int, int>{1, 2});
-	Exit* forestAPathToHouse = new Exit("Footprint path", "A path marked by human footprints", Exit::Direction::NORTH, forest, cabin);
 	Entity* rock = new Entity("Rock", "An engraved rock that reads: Tavern (No monsters allowed)", cabin);
 
-	player = new Player("Sheldor", "You seem like a fine fella", forest);
+	Exit* forestAPathToHouse = new Exit("footprint path", "A path marked by human footprints", "Footprint path", "A path marked by human footprints", Exit::Direction::NORTH, forest, cabinOut);
+	Exit* forestPathToCaveEntrance = new Exit("narrow path", "A narrow path between some rocks", "Narrow path", "A narrow path between some rocks", Exit::Direction::WEST, forest, caveEntranceRoom);
+	Exit* caveEntrance = new Exit("cave hole", "A hole leading down", "Climbable stretch", "A hole leading upwards", Exit::Direction::DOWN, caveEntranceRoom, cave);
+	Exit* cabinEntrance = new Exit("cabin door", "A door to the cabin", "Exit door", "A door towards the outside", Exit::Direction::NORTH, cabinOut, cabin);
 
-	rooms.push_back(cabin);
-	rooms.push_back(forest);
-	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.3\n";
+	Creature * goblin = new Creature("Goblin", "An unusually large and terryfing goblin", cave, 10, 10, 5, 6, 0, 0);
+
+
+	player = new Player("Sheldor", "You seem like a fine fella", forest, 25, 25, 5, 6, 2, 3);
+
+	entities.push_back(cabin);
+	entities.push_back(cabinOut);
+	entities.push_back(caveEntranceRoom);
+	entities.push_back(cave);
+	entities.push_back(forest);
+	entities.push_back(mailBox);
+	entities.push_back(key);
+	entities.push_back(box);
+	entities.push_back(welcomeCard);
+	entities.push_back(dagger);
+	entities.push_back(rock);
+	entities.push_back(forestAPathToHouse);
+	entities.push_back(forestPathToCaveEntrance);
+	entities.push_back(caveEntrance);
+	entities.push_back(goblin);
+
+	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.4\n";
 }
 
 World::~World() {
 	//Iterate rooms and delete them
-	vector<Room*>::iterator it;
-	for (it = rooms.begin(); it != rooms.end(); ++it) {
+	vector<Entity*>::iterator it;
+	for (it = entities.begin(); it != entities.cend(); ++it) {
 		if ((*it) != nullptr) {
 			delete *it;
 		}
 	}
+	delete player;
 }
 
 bool World::TryParseCommand(vector<string>& args) {
@@ -148,7 +179,6 @@ bool World::TryParseCommand(vector<string>& args) {
 		if (CompareStrings(args[0], lookCmds)) {			//LOOK 
 			Entity* eToLookAt = nullptr;
 			eToLookAt = player->GetRoom()->GetChildNamed(args[3].c_str());
-
 			if (eToLookAt != nullptr) {
 				Entity* containerEntityToLookAt = nullptr;
 				containerEntityToLookAt = eToLookAt->GetChildNamed(args[1].c_str());
@@ -156,7 +186,6 @@ bool World::TryParseCommand(vector<string>& args) {
 			} else {
 				Println("There's no " + args[3] + " here...");
 			}
-
 		} else if (CompareStrings(args[0], pickCmds)) {		// PICK
 			player->Take(args);
 		} else if (CompareStrings(args[0], unlockCmds)) {

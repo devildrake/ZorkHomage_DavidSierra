@@ -1,6 +1,6 @@
 #pragma once
 #include "Entity.h"
-class Container : Entity {
+class Container : public Entity {
 public:
 	Entity* keyToUnlock;
 	bool isLocked;

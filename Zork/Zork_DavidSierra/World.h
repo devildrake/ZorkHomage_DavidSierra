@@ -5,21 +5,16 @@
 using namespace std;
 class Entity;
 class Player;
-class Room;
 class Exit;
 
-class World
-{
+class World {
 public:
-
+	vector<Entity*> entities;
 	World();
 	~World();
 
 	bool TryParseCommand(vector<string>& args);
-
 private:
-	vector<Room*> rooms;
-	vector<Exit*> exits;
-	vector<Entity*> entities;
 	Player* player;
+
 };

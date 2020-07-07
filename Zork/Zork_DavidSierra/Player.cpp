@@ -4,8 +4,9 @@
 #include "Container.h"
 #include "Exit.h"
 
-Player::Player(const char* name, const char* desc, Room* initialRoom) : Creature(name, desc, initialRoom) {
+Player::Player(const char* name, const char* desc, Room* initialRoom, int health, int maxHealth, int bAtt_m, int bAtt_M, int bDef_m, int bDef_M) : Creature(name, desc, initialRoom, health, maxHealth, bAtt_m, bAtt_M, bDef_m, bDef_M) {
 	entityType = EntityType::PLAYER;
+	GetRoom()->playerInRoom = true;
 }
 
 Player::~Player() {
@@ -31,16 +32,16 @@ bool Player::IsAlive() const {
 	return false;
 }
 
-
-
 void Player::Go(const char* dir) {
 	Exit* e = GetRoom()->GetExitInDirection(dir);
 	if (e != nullptr) {
+		GetRoom()->playerInRoom = false;
 		if (e->direction == Exit::StringToDirection(dir)) {
 			SetNewParent(e->to);
 		} else if (e->GetReverseDirection() == Exit::StringToDirection(dir)) {
 			SetNewParent(e->from);
 		}
+		GetRoom()->playerInRoom = true;
 		cout << parent->name << endl;
 		cout << parent->description << endl;
 	}

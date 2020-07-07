@@ -17,8 +17,7 @@ protected:
 	pair<int, int> bonusAttack;
 	pair<int, int> bonusDefense;
 public:
-	Creature(const char* name, const char* desc, Room* initialRoom, int, int);
-	Creature(const char* name, const char* desc, Room* initialRoom);
+	Creature(const char* name, const char* desc, Room* initialRoom, int, int, int, int, int, int);
 	~Creature();
 
 	bool IsAlive() const;

@@ -11,9 +11,7 @@ Entity::Entity(const char* name, const char* description, Entity* parent) {
 
 
 Entity::~Entity() {
-	for (list<Entity*>::iterator it = entitiesContained.begin(); it != entitiesContained.cend(); ++it) {
-		delete *it;
-	}
+
 }
 
 //Print name and description

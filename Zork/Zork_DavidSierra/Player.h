@@ -10,7 +10,7 @@ class Container;
 
 class Player : public Creature {
 public:
-	Player(const char* name, const char* desc, Room* initialRoom);
+	Player(const char* name, const char* desc, Room* initialRoom, int h, int mh, int ba_m, int ba_M, int bd_m, int bd_M);
 	~Player();
 
 	Room* GetRoom() const;
