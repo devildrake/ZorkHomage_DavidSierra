@@ -1,6 +1,6 @@
 #include "Room.h"
 #include "Exit.h"
-
+#include "Creature.h"
 Room::Room(const char* name, const char* desc) :Entity(name, desc, nullptr) {
 
 }
@@ -22,7 +22,7 @@ void Room::Look() const {
 			break;
 		}
 		case EntityType::CREATURE: {
-			Println("You can see something: " + e->name);
+			Println("You can see something: " + e->name + (((Creature*)e)->IsAlive() ? "" : " (Dead)"));
 			break;
 		}
 		case EntityType::PLAYER: {
@@ -34,7 +34,7 @@ void Room::Look() const {
 			break;
 		}
 		default: {
-			Println("There is a " + e->name);
+			cout << "There is " << GetPreferredArticle(e->name) << " " << e->name << " here" << endl;
 			break;
 		}
 		}

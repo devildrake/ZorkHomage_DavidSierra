@@ -4,7 +4,7 @@
 #include "Container.h"
 #include "Exit.h"
 
-Player::Player(const char* name, const char* desc, Room* initialRoom, int health, int maxHealth, int bAtt_m, int bAtt_M, int bDef_m, int bDef_M) : Creature(name, desc, initialRoom, health, maxHealth, bAtt_m, bAtt_M, bDef_m, bDef_M) {
+Player::Player(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int health, int maxHealth, int bAtt_m, int bAtt_M, int bDef_m, int bDef_M, int crit, int miss) : Creature(name, desc, unArmedWeapon, initialRoom, health, maxHealth, bAtt_m, bAtt_M, bDef_m, bDef_M, crit, miss) {
 	entityType = EntityType::PLAYER;
 	GetRoom()->playerInRoom = true;
 }
@@ -24,9 +24,7 @@ void Player::Look() const {
 Room* Player::GetRoom() const {
 	return (Room*)parent;
 }
-bool Player::IsPlayerInRoom() const {
-	return false;
-}
+
 
 bool Player::IsAlive() const {
 	return false;

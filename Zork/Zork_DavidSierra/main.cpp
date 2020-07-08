@@ -4,16 +4,17 @@
 #include "GlobalMethods.h"
 #include "World.h"
 #include "Room.h"
+#include <time.h>
 
 using namespace std;
 
 //Strings used to check for exit input
 const string exitStrings[5] = { "exit","quit","close","salir","cerrar" };
 
-int main()
-{
+int main() {
 	char player_input[100];
 	vector<string>commandArguments;
+	srand((unsigned int)time(NULL));
 
 	World aWorld;
 
@@ -29,17 +30,16 @@ int main()
 				auxString += commandArguments[i];
 				auxString += " ";
 			}
-
-			if (!aWorld.TryParseCommand(commandArguments)) {
-				if (CompareStrings(player_input, exitStrings)) {
-					cout << "Thanks for playing! Bye!\n";
-					break;
-				}
-				else {
+			if (CompareStrings(player_input, exitStrings)) {
+				cout << "Thanks for playing! Bye!\n";
+				break;
+			} else {
+				if (!aWorld.TryParseCommand(commandArguments)) {
 					cout << "Command not found\n";
 				}
 			}
 			commandArguments.clear();
+
 		}
 
 	}

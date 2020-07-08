@@ -3,22 +3,26 @@
 #include "Container.h"
 #include "Equipable.h"
 #include "Consumable.h"
+#include "Exit.h"
 
-Creature::Creature(const char* name, const char* desc, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M) :Entity(name, desc, (Entity*)initialRoom) {
+Creature::Creature(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M, int critChances, int missChances) :Entity(name, desc, (Entity*)initialRoom) {
 	this->name = name;
 	description = desc;
 	this->parent = (Entity*)initialRoom;
-	this->parent->entitiesContained.push_back(this);
+	//this->parent->entitiesContained.push_back(this);
 	max_health = maxHealth;
 	health = startingHealth;
 	baseAttack.first = baseAttack_m;
 	baseAttack.second = baseAttack_M;
 	baseDefense.first = baseDefense_m;
 	baseDefense.second = baseDefense_M;
+	this->critChances = critChances;
+	this->missChances = missChances;
+	this->unArmedWeapon = unArmedWeapon;
 	entityType = EntityType::CREATURE;
 }
 
-void Creature::UnEquip(vector<string>args) {
+void Creature::UnEquip(const vector<string>args) {
 	Entity* objectToUnEquip = GetChildNamed(args[1].c_str());
 
 	if (objectToUnEquip != nullptr) {
@@ -73,7 +77,7 @@ void Creature::Equip(Equipable* e) {
 	bonusDefense.second += e->defense_bonus.second;
 }
 
-void Creature::Equip(vector<string>args) {
+void Creature::Equip(const vector<string>args) {
 	Entity* objectToEquip = GetChildNamed(args[1].c_str());
 	if (objectToEquip != nullptr) {
 		if (objectToEquip->entityType == EntityType::ITEM) {
@@ -92,6 +96,7 @@ void Creature::Equip(vector<string>args) {
 				} else {
 					Println(name + " has " + armour->name + " already equipped");
 				}
+				break;
 			}
 			case ItemType::WEAPON: {
 				Equipable* equipableToEquip = ((Equipable*)itemToEquip);
@@ -121,10 +126,12 @@ void Creature::Equip(vector<string>args) {
 
 void Creature::Inspect()const {
 	Println("==========================");
-	Println(name);
-	cout << " -Health:" << health << "/" << max_health << endl
-		<< " -Attack:" << baseAttack.first + bonusAttack.first << " - " << baseAttack.second + bonusAttack.second << endl
-		<< " -Defense:" << baseDefense.first + bonusDefense.first << " - " << baseDefense.second + bonusDefense.second << endl;
+	Println(name + (IsAlive() ? (IsStunned() ? " (Stunned)" : "") : " (Dead)"));
+	if (IsAlive()) {
+		cout << " - Health:" << health << "/" << max_health << endl
+			<< " - Attack:" << baseAttack.first + bonusAttack.first << " - " << baseAttack.second + bonusAttack.second << (weapon == nullptr ? "" : " with " + weapon->name + " equipped as weapon") << endl
+			<< " - Defense:" << baseDefense.first + bonusDefense.first << " - " << baseDefense.second + bonusDefense.second << (armour == nullptr ? "" : " with " + weapon->name + " equipped as armour") << endl;
+	}
 }
 
 Creature::~Creature() {
@@ -136,11 +143,187 @@ Room* Creature::GetRoom() const {
 }
 
 void Creature::Look()const {
-	cout << name << endl;
-	cout << description << endl;
+	Println(name + (IsAlive() ? "" : " (Dead)"));
+	Println(description);
 }
 
-void Creature::Take(vector<string>args) {
+int Creature::GetRandomAttack()const {
+	int minDamage = (baseAttack.first + bonusAttack.first);
+	int maxDamage = (baseAttack.second + bonusAttack.second);
+	return rand() % (maxDamage - minDamage) + minDamage;
+}
+
+int Creature::GetRandomDefense()const {
+	if (baseDefense.first + bonusDefense.first > 0) {
+		int minDefense = (baseDefense.first + bonusDefense.first);
+		int maxDefense = (baseDefense.second + bonusDefense.second);
+		int defDiff = maxDefense - minDefense;
+		if (defDiff > 0) {
+			return ((rand() % (defDiff)) + minDefense);
+		} else {
+			return minDefense;
+		}
+	}
+	return 0;
+}
+
+void Creature::GetHurt(const int dmg) {
+	int dmgToReceive = dmg - GetRandomDefense();
+
+	if (dmgToReceive > 0) {
+		health -= dmgToReceive;
+		cout << name << " took " << dmgToReceive << " damage!\n";
+	} else {
+		Println(name + " took no damage!");
+	}
+}
+
+void Creature::GetHurt(Creature* byWhom, bool critical) {
+	int incomingDamage = byWhom->GetRandomAttack()*(critical ? 2 : 1);
+
+	GetHurt(incomingDamage);
+
+	if (critical) {
+		stunnedTurnsRemaining = 3;
+		Println(name + " is stunned!");
+	}
+
+	if (!IsAlive()) {
+		string deathMessage = name + " died ";
+
+		if (entitiesContained.size() > 0) {
+			deathMessage += "and dropped:";
+		}
+
+		vector<string>itemsToDrop;
+		for (list<Entity*>::const_iterator it = entitiesContained.begin(); it != entitiesContained.cend(); ++it) {
+			Entity* e = *it;
+			if (e->entityType == EntityType::ITEM) {
+				itemsToDrop.push_back(e->name);
+				deathMessage += "\n - " + e->name;
+			}
+		}
+		Drop(itemsToDrop);
+		Println(deathMessage);
+	}
+}
+
+//This method generates an "attack" towards combat_target, without further retribution
+void Creature::CounterStrike() {
+	if (combat_target != nullptr) {
+		if (combat_target->IsAlive()) {
+			if ((rand() % 100) > missChances) {
+				bool isCritical = (rand() % 100) <= critChances;
+				Println(name + " swings his " + (weapon == nullptr ? unArmedWeapon : weapon->name) + " and lands a" + (isCritical ? " CRITICAL " : " ") + "hit on " + combat_target->name + "!");
+				combat_target->GetHurt(GetRandomAttack() * isCritical ? 2 : 1);
+			} else {
+				Println(name + " tried to attack " + combat_target->name + " but his " + (weapon == nullptr ? unArmedWeapon : weapon->name) + " missed!");
+			}
+		} else {
+			combat_target = nullptr;
+		}
+	}
+}
+
+bool Creature::GoToRoom(const Entity* targetRoomAsEntity) {
+	vector<Entity*> exits = parent->GetChildrenOfType(EntityType::EXIT);
+	Room* targetRoom = (Room*)targetRoomAsEntity;
+	if (exits.size() > 0) {
+		for (vector<Entity*>::const_iterator it = exits.begin(); it != exits.cend(); ++it) {
+			Exit* e = (Exit*)*it;
+			if (e->to == targetRoom || e->from == targetRoom) {
+				SetNewParent(targetRoom);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+bool Creature::IsStunned()const {
+	return stunnedTurnsRemaining > 0;
+}
+
+//This method makes Creature go to the room of its combat_target if it is one exit away
+void Creature::ChaseAttacker() {
+	if (combat_target->parent != parent) {
+		if (GoToRoom(combat_target->parent)) {
+			cout << name << " chased " << combat_target->name << " to " << parent->name << endl;
+		} else {
+			combat_target = nullptr;
+		}
+	}
+}
+
+bool Creature::IsPlayerInRoom() const {
+	for (list<Entity*>::const_iterator it = GetRoom()->entitiesContained.begin(); it != GetRoom()->entitiesContained.cend(); ++it) {
+		if ((*it)->entityType == EntityType::PLAYER) {
+			return true;
+		}
+	}
+	return false;
+}
+
+//This method is the resolution of what would be considered an "action turn" by a Creature (not the player)
+void Creature::TakeAction() {
+	if (!IsAlive())return;
+	if (combat_target != nullptr && !IsStunned()) {
+		ChaseAttacker();
+	}
+	bool wasStunned = stunnedTurnsRemaining > 0;
+	stunnedTurnsRemaining = wasStunned ? stunnedTurnsRemaining - 1 : 0;
+
+	if (IsStunned()) {
+		if (IsPlayerInRoom()) {
+			Println(name + " is still stunned\n");
+		} 
+	} else if (wasStunned) {
+		if (IsPlayerInRoom()) {
+			Println(name + " is no longer stunned\n");
+		} else {
+			Println("A loud roar is heard from miles away, " + name + " is no longer stunned");
+		}
+	}
+}
+
+//This method randomizes missed attacks and critical attacks and outputs corresponding texts
+void Creature::TryToAttack(Creature* target) {
+	target->combat_target = this;
+
+	if ((rand() % 100) > missChances) {
+		bool isCritical = (rand() % 100) <= critChances;
+
+		Println(name + " swings his " + (weapon == nullptr ? unArmedWeapon : weapon->name) + " and lands a" + (isCritical ? " CRITICAL " : " ") + "hit on " + target->name + "!");
+		target->GetHurt(this, isCritical);
+
+	} else {
+		Println(name + " tried to attack " + target->name + " but his " + (weapon == nullptr ? unArmedWeapon : weapon->name) + " missed!");
+	}
+	if (target->IsAlive() && !target->IsStunned()) {
+		target->CounterStrike();
+	}
+}
+
+
+void Creature::Attack(const vector<string> args) {
+	Entity* attackTarget = GetRoom()->GetChildNamed(args[1].c_str());
+	if (attackTarget != nullptr) {
+		if (attackTarget->entityType == EntityType::CREATURE || attackTarget->entityType == EntityType::PLAYER) {
+			Creature* creatureToAttack = (Creature*)attackTarget;
+			if (creatureToAttack != this) {
+				if (creatureToAttack->IsAlive()) {
+					combat_target = creatureToAttack;
+					TryToAttack(creatureToAttack);
+				} else {
+					Println("Leave the dead be");
+				}
+			}
+		}
+	}
+}
+
+void Creature::Take(const vector<string>args) {
 	if (args.size() == 2) {
 		Entity* eToTake = GetRoom()->GetChildNamed(args[1].c_str());
 		if (eToTake != nullptr) {
@@ -178,17 +361,24 @@ void Creature::Take(vector<string>args) {
 		} else {
 			Println("there is no " + args[3]);
 		}
-	} else {
-
 	}
-	//Entity* eToTake = GetRoom()->GetChildNamed(name);
-	//if (eToTake != nullptr) {
-	//	eToTake->SetNewParent(this);
-	//}
 }
 
-void Creature::Drop(vector<string>args) {
-	if (args.size() == 2) { //Drop on current room
+
+void Creature::Drop(const vector<string>args) {
+	if (args.size() == 1) {
+		Entity* eToDrop = GetChildNamed(args[0].c_str());
+		if (eToDrop != nullptr) {
+			if (armour == eToDrop) {
+				UnEquip(armour);
+				armour = nullptr;
+			} else if (weapon == eToDrop) {
+				UnEquip(weapon);
+				weapon = nullptr;
+			}
+			eToDrop->SetNewParent(GetRoom());
+		}
+	} else if (args.size() == 2) { //Drop on current room
 		Entity* eToDrop = GetChildNamed(args[1].c_str());
 		if (eToDrop != nullptr) {
 			if (armour == eToDrop) {
@@ -233,7 +423,7 @@ void Creature::Drop(vector<string>args) {
 }
 
 
-void Creature::UnLock(vector<string> args) {
+void Creature::UnLock(const vector<string> args) {
 	if (args.size() == 4) {
 		Entity* objToOpenWith = GetChildNamed(args[3].c_str());
 		if (objToOpenWith != nullptr) {
@@ -266,5 +456,5 @@ void Creature::UnLock(vector<string> args) {
 }
 
 bool Creature::IsAlive() const {
-	return false;
+	return health > 0;
 }

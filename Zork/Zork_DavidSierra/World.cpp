@@ -6,19 +6,20 @@
 #include "Exit.h"
 #include "Room.h"
 #include "Player.h"
+
 const string lookCmds[3] = { "look","l" };
 const string lookPpsts[3] = { "at","to" };
 const string goCmds[3] = { "go","walk","move" };
 const string selfCmds[3] = { "me","self","myself" };
 const string clearCmds[4] = { "clear","wipe","clr","cls" };
-const string pickCmds[3] = { "pick","grab","take" };
+const string pickCmds[4] = { "pick","grab","take","get" };
 const string inventoryCmds[3] = { "inventory", "inv","i" };
 const string unlockCmds[2] = { "open", "unlock" };
 const string equipCmds[2] = { "equip","eq" };
 const string unEquipCmds[2] = { "unequip","uneq" };
 const string examineCmds[4] = { "examine","ex","inspect","ins" };
 const string dropCmds[2] = { "drop", "place" };
-
+const string atkCmds[3] = { "strike","attack","kill" };
 
 World::World() {
 	Room* cabin = new Room("Small Cabin", "A small cabin in the woods, clearly owned by a hunter");
@@ -44,10 +45,13 @@ World::World() {
 	Exit* caveEntrance = new Exit("cave hole", "A hole leading down", "Climbable stretch", "A hole leading upwards", Exit::Direction::DOWN, caveEntranceRoom, cave);
 	Exit* cabinEntrance = new Exit("cabin door", "A door to the cabin", "Exit door", "A door towards the outside", Exit::Direction::NORTH, cabinOut, cabin);
 
-	Creature * goblin = new Creature("Goblin", "An unusually large and terryfing goblin", cave, 10, 10, 5, 6, 0, 0);
+	Creature * goblin = new Creature("Goblin", "An unusually large and terryfing goblin", "claws", forest, 10, 10, 3, 4, 0, 0, 5, 20);
+	Equipable* lightArmour = new Equipable("Armour", " A light armour with goblin symbols around it", goblin, ItemType::ARMOUR, pair<int, int>{0, 0}, pair<int, int>{3, 4});
 
+	Creature * nemesiSlime = new Creature("NemesiSlime", "One big and scary slime", "body", forest, 100, 100, 3, 4, 100, 100, 50, 0);
 
-	player = new Player("Sheldor", "You seem like a fine fella", forest, 25, 25, 5, 6, 2, 3);
+	goblin->Equip(lightArmour);
+	player = new Player("Sheldor", "You seem like a fine fella", "fists", forest, 25, 25, 5, 6, 2, 3, 20, 10);
 
 	entities.push_back(cabin);
 	entities.push_back(cabinOut);
@@ -64,7 +68,10 @@ World::World() {
 	entities.push_back(forestPathToCaveEntrance);
 	entities.push_back(caveEntrance);
 	entities.push_back(goblin);
+	entities.push_back(nemesiSlime);
 
+	creatures.push_back(goblin);
+	creatures.push_back(nemesiSlime);
 	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.4\n";
 }
 
@@ -77,9 +84,11 @@ World::~World() {
 		}
 	}
 	delete player;
+	entities.clear();
+	creatures.clear();
 }
 
-bool World::TryParseCommand(vector<string>& args) {
+bool World::TryParseCommand(vector<string>& args)const {
 
 	bool res = true;
 
@@ -99,7 +108,6 @@ bool World::TryParseCommand(vector<string>& args) {
 	}
 	case 2: {//"Command" + EntityName
 		if (CompareStrings(args[0], lookCmds)) {		//LOOK
-
 			if (!CompareStrings(args[1], selfCmds)) {
 				Entity* lookTarget = player->GetRoom()->GetChildNamed(args[1].c_str());
 
@@ -121,9 +129,7 @@ bool World::TryParseCommand(vector<string>& args) {
 			player->Go(c);
 		} else if (CompareStrings(args[0], pickCmds)) {		//PICK
 			player->Take(args);
-		}
-
-		else if (CompareStrings(args[0], equipCmds)) {		//EQUIP
+		} else if (CompareStrings(args[0], equipCmds)) {		//EQUIP
 			player->Equip(args);
 		} else if (CompareStrings(args[0], unEquipCmds)) {	//UNEQUIP
 			player->UnEquip(args);
@@ -151,6 +157,8 @@ bool World::TryParseCommand(vector<string>& args) {
 			}
 		} else if (CompareStrings(args[0], dropCmds)) {		//DROP
 			player->Drop(args);
+		} else if (CompareStrings(args[0], atkCmds)) {		//DROP
+			player->Attack(args);
 		} else {
 			res = false;
 		}
@@ -225,6 +233,9 @@ bool World::TryParseCommand(vector<string>& args) {
 	default:
 		res = false;
 	}
-
+	for (vector<Creature*>::const_iterator it = creatures.begin(); it != creatures.cend(); ++it) {
+		(*it)->TakeAction();
+	}
 	return res;
 }
+
