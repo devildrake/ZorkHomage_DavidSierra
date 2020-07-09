@@ -2,7 +2,7 @@
 #include "Exit.h"
 #include "Creature.h"
 Room::Room(const char* name, const char* desc) :Entity(name, desc, nullptr) {
-
+	entityType = EntityType::ROOM;
 }
 
 Room::~Room() {
@@ -29,8 +29,11 @@ void Room::Look() const {
 			break;
 		}
 		case EntityType::EXIT: {
-			cout << "You can see ";
-			e->Look();
+			Exit* exit = (Exit*)e;
+			if (!exit->uniDirectional || this == exit->from) {
+				cout << "You can see ";
+				e->Look();
+			}
 			break;
 		}
 		default: {

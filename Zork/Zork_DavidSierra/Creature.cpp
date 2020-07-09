@@ -225,6 +225,16 @@ void Creature::CounterStrike() {
 	}
 }
 
+void Creature::TeleTransportToRoom(const Entity* targetRoomAsEntity) {
+	if (targetRoomAsEntity->entityType == EntityType::ROOM) {
+		Room* targetRoom = (Room*)targetRoomAsEntity;
+		if (targetRoom != nullptr) {
+			SetNewParent(targetRoom);
+		}
+	}
+}
+
+
 bool Creature::GoToRoom(const Entity* targetRoomAsEntity) {
 	vector<Entity*> exits = parent->GetChildrenOfType(EntityType::EXIT);
 	Room* targetRoom = (Room*)targetRoomAsEntity;
@@ -277,7 +287,7 @@ void Creature::TakeAction() {
 	if (IsStunned()) {
 		if (IsPlayerInRoom()) {
 			Println(name + " is still stunned\n");
-		} 
+		}
 	} else if (wasStunned) {
 		if (IsPlayerInRoom()) {
 			Println(name + " is no longer stunned\n");
@@ -443,8 +453,22 @@ void Creature::UnLock(const vector<string> args) {
 					} else {
 						Println(name + " couldn't unlock " + entityToOpen->name + " (Not locked ) ");
 					}
+				} else if (entityToOpen->entityType == EntityType::EXIT) {
+					Exit* exitToOpen = (Exit*)entityToOpen;
+					if (exitToOpen->keyToUnlock != nullptr && exitToOpen->isLocked) {
+						if ((exitToOpen)->keyToUnlock == objToOpenWith) {
+							exitToOpen->isLocked = false;
+							Println(name + " used " + objToOpenWith->name + " to open " + entityToOpen->name);
+							//containerToOpen->keyToUnlock = nullptr;
+							//delete key?
+						} else {
+							Println(name + " couldn't use " + objToOpenWith->name + " to open " + entityToOpen->name + (" (Wrong key)"));
+						}
+					} else {
+						Println(name + " couldn't unlock " + entityToOpen->name + " (Not locked ) ");
+					}
 				} else {
-					Println(name + " couldn't unlock " + entityToOpen->name);
+					Println(name + " can't unlock " + entityToOpen->name);
 				}
 			} else {
 				Println(name + " couldn't find " + args[1]);

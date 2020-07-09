@@ -159,9 +159,10 @@
     <ClInclude Include="Exit.h" />
     <ClInclude Include="GlobalMethods.h" />
     <ClInclude Include="Item.h" />
-    <ClInclude Include="NPC.h" />
+    <ClInclude Include="NonPlayableCharacter.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />
+    <ClInclude Include="ScaredChild.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +174,10 @@
     <ClCompile Include="Exit.cpp" />
     <ClCompile Include="GlobalMethods.cpp" />
     <ClCompile Include="Item.cpp" />
-    <ClCompile Include="NPC.cpp" />
+    <ClCompile Include="NonPlayableCharacter.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="ScaredChild.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

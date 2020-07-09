@@ -2,30 +2,32 @@
 #include "Room.h"
 #include "GlobalMethods.h"
 
-Exit::Exit(const char* name, const char* desc, const char* auxName, const char* auxDesc, Exit::Direction aDirection, Room* from, Room* to) : Entity(name, desc, nullptr) {
+Exit::Exit(const char* name, const char* desc, const char* auxName, const char* auxDesc, Exit::Direction aDirection, Room* from, Room* to, bool uniDirectional, Entity* key) : Entity(name, desc, nullptr) {
 	direction = aDirection;
 	this->from = from;
 	this->to = to;
 	this->auxName = auxName;
 	this->auxDescription = auxDescription;
+	this->uniDirectional = uniDirectional;
 	from->entitiesContained.push_back(this);
 	to->entitiesContained.push_back(this);
+
+	if (key != nullptr) {
+		isLocked = true;
+		this->keyToUnlock = key;
+	}
 	entityType = EntityType::EXIT;
 }
 
 Exit::~Exit() {
-	//if (from != nullptr) {
-	//	from->entitiesContained.remove(this);
-	//} else {
-	//	to->entitiesContained.remove(this);
-	//}
+
 }
 
 void Exit::Look() const {
 	if (from->playerInRoom) {
-		cout << "that " << DirectionToStringNarrative(direction) << " there's a " + name + " - " + description + " that leads to " + to->name << endl;
-	} else {
-		cout << "that " << DirectionToStringNarrative(GetReverseDirection()) << " there's a " + auxName + " - " + auxDescription + " that leads to " + from->name << endl;
+		cout << "that " << DirectionToStringNarrative(direction) << " there's " << GetPreferredArticle(name) << " " << name + (description.size() > 0 ? " " + description : "") + (isLocked ? "that is locked" : " that leads to " + to->name) << endl;
+	} else if (!uniDirectional) {
+		cout << "that " << DirectionToStringNarrative(GetReverseDirection()) << " there's " << GetPreferredArticle(auxName) << " " << auxName + (auxDescription.size() > 0 ? " " + auxDescription : "") + (isLocked ? "that is locked" : " that leads to " + from->name) << endl;
 	}
 }
 

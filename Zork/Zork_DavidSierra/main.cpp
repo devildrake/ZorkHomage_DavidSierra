@@ -16,9 +16,10 @@ int main() {
 	vector<string>commandArguments;
 	srand((unsigned int)time(NULL));
 
+	bool gameOver = false;
 	World aWorld;
 
-	while (1) {
+	while (!gameOver) {
 		cout << "-";
 		cin.getline(player_input, sizeof(player_input));
 		TranslateToArguments(player_input, commandArguments);
@@ -35,7 +36,11 @@ int main() {
 				break;
 			} else {
 				if (!aWorld.TryParseCommand(commandArguments)) {
-					cout << "Command not found\n";
+					Println("Command not found");
+				}
+				gameOver = aWorld.CheckGameOver();
+				if (gameOver) {
+					Println("Game Over!");
 				}
 			}
 			commandArguments.clear();

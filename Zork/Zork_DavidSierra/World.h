@@ -16,6 +16,7 @@ public:
 	~World();
 
 	bool TryParseCommand(vector<string>& args)const;
+	bool CheckGameOver()const;
 private:
 	Player* player;
 

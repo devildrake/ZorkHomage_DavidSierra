@@ -46,13 +46,13 @@ void Println(const string& str1) {
  	cout << str1 << endl;
 }
 
-const char GetPreferredArticle(const string& str1) {
+const char* GetPreferredArticle(const string& str1) {
 	if (CompareCharInsensitive(str1.at(0), 'a')
 		|| CompareCharInsensitive(str1.at(0), 'e')
 		|| CompareCharInsensitive(str1.at(0), 'i')
 		|| CompareCharInsensitive(str1.at(0), 'o')
 		|| CompareCharInsensitive(str1.at(0), 'u')) {
-		return (const char)'an';
+		return (const char*)"an";
 	}
-	return (const char)'a';
+	return (const char*)"a";
 }

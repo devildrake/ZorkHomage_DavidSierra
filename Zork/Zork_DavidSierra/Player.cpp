@@ -33,15 +33,26 @@ bool Player::IsAlive() const {
 void Player::Go(const char* dir) {
 	Exit* e = GetRoom()->GetExitInDirection(dir);
 	if (e != nullptr) {
-		GetRoom()->playerInRoom = false;
-		if (e->direction == Exit::StringToDirection(dir)) {
-			SetNewParent(e->to);
-		} else if (e->GetReverseDirection() == Exit::StringToDirection(dir)) {
-			SetNewParent(e->from);
+		if (!e->isLocked) {
+			GetRoom()->playerInRoom = false;
+			if (e->direction == Exit::StringToDirection(dir)) {
+				SetNewParent(e->to);
+				GetRoom()->playerInRoom = true;
+				cout << parent->name << endl;
+				cout << parent->description << endl;
+			} else if (e->GetReverseDirection() == Exit::StringToDirection(dir)) {
+				if (!e->uniDirectional) {
+					SetNewParent(e->from);
+					GetRoom()->playerInRoom = true;
+					cout << parent->name << endl;
+					cout << parent->description << endl;
+				} else {
+					Println("No path that way");
+				}
+			}
+		} else {
+			Println(e->name + " is locked");
 		}
-		GetRoom()->playerInRoom = true;
-		cout << parent->name << endl;
-		cout << parent->description << endl;
 	}
 
 }
