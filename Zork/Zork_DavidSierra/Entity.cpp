@@ -14,7 +14,7 @@ Entity::~Entity() {
 
 }
 
-//Print name and description
+//Print name and description, some exceptions are implemented (Room)
 void Entity::Look()const {
 	Println(name + " - " + description);
 }

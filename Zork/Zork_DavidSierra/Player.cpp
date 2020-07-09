@@ -27,7 +27,7 @@ Room* Player::GetRoom() const {
 
 
 bool Player::IsAlive() const {
-	return false;
+	return health > 0;
 }
 
 void Player::Go(const char* dir) {

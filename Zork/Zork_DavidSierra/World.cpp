@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "ScaredChild.h"
 
+//Hardcoded keys that are later to compare and parses commands
 const string lookCmds[3] = { "look","l" };
 const string lookPpsts[3] = { "at","to" };
 const string goCmds[3] = { "go","walk","move" };
@@ -66,10 +67,8 @@ World::World() {
 
 	child->itemToDrop = chisel;
 
-	Entity* chisel = new Entity("chisel", "a magic chisel with goblin markings", child);
-	child->itemToDrop = chisel;
 
-	Entity* key = new Entity("Key", "A small key with a horse sigil carved", woodsmanCabin);
+
 
 	Container* cart = new Container("Cart", "Your trusted old cart, pulled by your horse alone", farmOut);
 	Entity* woodsManNote = new Entity("Note", "The note reads: Lovegood me old pal, I left an extra copy of the trapdoor I made for yer house in my cabin south of the clearing just in case you lost yours, since your kid is always playing with it, stay safe friend! I sure will once I'm away from here!", farmHouse);
@@ -86,6 +85,7 @@ World::World() {
 	goblin->Equip(lightArmour);
 	player = new Player("Sheldor", "You seem like a fine fella", "fists", farmOut, 25, 25, 5, 6, 2, 3, 20, 10);
 
+	//All entities are pushed back into the entities for later deletion
 	entities.push_back(farmHouse);
 	entities.push_back(farmBasement);
 	entities.push_back(farmEntrance);
@@ -122,6 +122,7 @@ World::World() {
 	entities.push_back(rock);
 	entities.push_back(goblin);
 
+	//Creatures added to creatures vector will have the ability to "act" after each command the player inputs
 	creatures.push_back(goblin);
 	creatures.push_back(child);
 	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.5\n";
@@ -226,7 +227,7 @@ bool World::TryParseCommand(vector<string>& args)const {
 		}
 		break;
 	}
-	case 3: {
+	case 3: {// Some commands that can admit prepositions
 		if (CompareStrings(args[0], lookCmds)) {			//LOOK
 			if (CompareStrings(args[1], lookPpsts)) {
 				//To do Must call entities' Look() override if entity with name arg[2] is found (Only works with one of the correct prepositions)
