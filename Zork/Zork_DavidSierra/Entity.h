@@ -28,7 +28,7 @@ public:
 	Entity(const char* name, const char* description, Entity* parent);
 	virtual ~Entity();
 	virtual void Look() const;
-
+	virtual void TakeAction();
 	void SetNewParent(Entity*e);
 	Entity* GetChildNamed(const char* targetName)const;
 	vector<Entity*> GetChildrenOfType(EntityType type)const;

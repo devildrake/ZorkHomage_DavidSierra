@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Cart.h" />
     <ClInclude Include="Consumable.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="Creature.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cart.cpp" />
     <ClCompile Include="Consumable.cpp" />
     <ClCompile Include="Container.cpp" />
     <ClCompile Include="Creature.cpp" />

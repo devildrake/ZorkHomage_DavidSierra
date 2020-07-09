@@ -6,6 +6,7 @@
 #include "Exit.h"
 #include "Room.h"
 #include "Player.h"
+#include "Cart.h"
 #include "ScaredChild.h"
 
 //Hardcoded keys that are later to compare and parses commands
@@ -24,10 +25,9 @@ const string dropCmds[2] = { "drop", "place" };
 const string atkCmds[3] = { "strike","attack","kill" };
 
 World::World() {
-
 	//Farm
 	Room* farmHouse = new Room("Farm house", "A small house, there's tools and furniture all over the place");
-	Room* farmBasement = new Room("Farm basement", "A dim light enters from between the planks and iluminates a basement with a few barrels");
+	Room* farmAttic = new Room("Farm attic", "A dim light enters from between the planks and iluminates an attic with a few haystacks");
 	Room* farmEntrance = new Room("Farm entrance", "The only entrance to an apparently deserted farm");
 	Room* farmStables = new Room("Farm stables", "The farm's stables, there's blood pools where horses should be, as well as trails leading to holes in the walls going outside");
 	Room* farmOut = new Room("Outside of farm", "The entrance of a small farm");
@@ -44,7 +44,7 @@ World::World() {
 	Room* lake = new Room("Lake", "A big lake");
 
 
-	Exit* farmOutToFarmEntrance = new Exit("simple road", "marked by wheels", "simple road", "marked by wheels", Exit::Direction::NORTH, farmOut, farmEntrance);
+	Exit* farmOutToFarmEntrance = new Exit("simple road", "marked by wheels", "simple road", "marked by wheels", Exit::Direction::EAST, farmOut, farmEntrance);
 	Exit* farmEntranceToFarmHouse = new Exit("broken door", "with bloodstains", "broken door", "with bloodstains", Exit::Direction::NORTH, farmEntrance, farmHouse);
 	Exit* farmEntranceToFarmStables = new Exit("double door", "with burning marks and partially scortched", "double door", "with burning marks and partially scortched", Exit::Direction::EAST, farmEntrance, farmStables);
 	Exit* farmOutToForestOutskirts = new Exit("road", "severly marked by wheels", "road", "severly marked by wheels", Exit::Direction::SOUTH, farmOut, forestOutSkirts);
@@ -57,37 +57,42 @@ World::World() {
 	Exit* clearingToLake = new Exit("path", "", "path", "", Exit::Direction::EAST, clearing, lake);
 	Exit* clearingToWoodsmanCabin = new Exit("empty doorway", "", "empty doorway", "", Exit::Direction::SOUTH, clearing, woodsmanCabin);
 	Exit* lakeToForestOutskirts = new Exit("path", "", "path", "", Exit::Direction::NORTH, lake, forestOutSkirts, true);
+	Exit* cabinToLake = new Exit("window", "", "", "", Exit::Direction::EAST, woodsmanCabin, lake, true);
 
-	Entity* key = new Entity("Key", "A small key with a horse sigil carved", woodsmanCabin);
-	Exit* farmHouseToFarmBasement = new Exit("trapdoor", "", "trapdoor", "", Exit::Direction::UP, farmHouse, farmBasement, false, key);
+	//Entity* key = new Entity("Key", "A small key with a horse sigil carved", woodsmanCabin);
+	Container* chest = new Container("Chest", "A small chest", woodsmanCabin);
+	Entity* key = new Entity("Key", "A small key with a horse sigil carved", chest);
+	Exit* farmHouseToFarmBasement = new Exit("trapdoor", "", "trapdoor", "", Exit::Direction::UP, farmHouse, farmAttic, false, key);
 	Entity* doll = new Entity("doll", "a raggedy doll that must belong to some kid", farmStables);
-	ScaredChild*child = new ScaredChild("child", "a trembling child", "hands", farmBasement, 5, 5, 0, 0, 0, 0, 50, 0, doll, nullptr, farmOut, "The child is quietly playing with her doll in the cart");
+	ScaredChild*child = new ScaredChild("child", "a trembling child", "hands", farmAttic, 5, 5, 0, 0, 0, 0, 50, 0, doll, nullptr, farmOut, "The child is quietly playing with her doll in the cart");
 	Entity* chisel = new Entity("chisel", "a magic chisel with goblin markings", child);
 	Exit* caveEntranceToCave = new Exit("hole", "leading down", "climbable stretch", "with a hole leading upwards", Exit::Direction::DOWN, caveEntrance, cave, false, chisel);
 
 	child->itemToDrop = chisel;
 
-
-
-
-	Container* cart = new Container("Cart", "Your trusted old cart, pulled by your horse alone", farmOut);
 	Entity* woodsManNote = new Entity("Note", "The note reads: Lovegood me old pal, I left an extra copy of the trapdoor I made for yer house in my cabin south of the clearing just in case you lost yours, since your kid is always playing with it, stay safe friend! I sure will once I'm away from here!", farmHouse);
 
 	Container* mailBox = new Container("Mailbox", "A rusty mailbox", farmOut);
 	Entity* welcomeLetter = new Entity("Letter", "The letter reads: \nDear Mr Lovegood,\nYour request for an adventurer for the apparent presence of goblins in your area has been notified to the guild and the payment has been accepted, Please stand by and try to stay safe until an adventurer arrives.\nSigned Adventurer Guild administration.", (Entity*)mailBox);
 
-	Equipable* dagger = new Equipable("Dagger", "A small rusty dagger", (Entity*)cart, ItemType::WEAPON, pair<int, int>{3, 7}, pair<int, int>{1, 2});
+	//Goblin
+	Creature* goblin = new Creature("Goblin", "An unusually large and terryfing goblin", "claws", cave, 10, 10, 2, 5, 0, 0, 5, 20);
+	Equipable* armour = new Equipable("Armour", " A light armour with goblin symbols around it, it should make a fine proof of mission complete, you should place it in your cart", cave, ItemType::ARMOUR, pair<int, int>{0, 0}, pair<int, int>{3, 4});
+	goblin->Equip(armour);
+
+	Creature* slime = new Creature("Slime", "A harmless slime", "body", lake, 10, 10, 3, 4, 0, 0, 5, 20);
+	Equipable* axe = new Equipable("Axe", "A rusty old axe", slime, ItemType::WEAPON, pair<int, int>{3, 5}, pair<int, int>{0, 0});
+
+	Cart* cart = new Cart(this, "Cart", "Your trusted old cart, pulled by your horse alone", farmOut, armour);
+	Equipable* dagger = new Equipable("Dagger", "A small rusty dagger", (Entity*)cart, ItemType::WEAPON, pair<int, int>{1, 4}, pair<int, int>{1, 2});
 	Entity* rock = new Entity("Rock", "An engraved rock that reads: property of Tanya", farmHouse);
-	Creature* goblin = new Creature("Goblin", "An unusually large and terryfing goblin", "claws", cave, 10, 10, 3, 4, 0, 0, 5, 20);
-	Equipable* lightArmour = new Equipable("Armour", " A light armour with goblin symbols around it", goblin, ItemType::ARMOUR, pair<int, int>{0, 0}, pair<int, int>{3, 4});
 	Creature* deadFarmer = new Creature("Farmer", "A bloody farmer with multiple claw wounds", "Fists", farmStables, 10, 0, 0, 0, 0, 0, 0, 0);
 
-	goblin->Equip(lightArmour);
-	player = new Player("Sheldor", "You seem like a fine fella", "fists", farmOut, 25, 25, 5, 6, 2, 3, 20, 10);
+	player = new Player("Sheldor", "You and your lonely self", "fists", farmOut, 15, 15, 3, 5, 0, 2, 20, 10);
 
 	//All entities are pushed back into the entities for later deletion
 	entities.push_back(farmHouse);
-	entities.push_back(farmBasement);
+	entities.push_back(farmAttic);
 	entities.push_back(farmEntrance);
 	entities.push_back(farmStables);
 	entities.push_back(farmOut);
@@ -113,6 +118,7 @@ World::World() {
 	entities.push_back(clearingToLake);
 	entities.push_back(clearingToWoodsmanCabin);
 	entities.push_back(lakeToForestOutskirts);
+	entities.push_back(cabinToLake);
 	entities.push_back(deadFarmer);
 	entities.push_back(mailBox);
 	entities.push_back(key);
@@ -121,10 +127,12 @@ World::World() {
 	entities.push_back(dagger);
 	entities.push_back(rock);
 	entities.push_back(goblin);
-
+	entities.push_back(chest);
 	//Creatures added to creatures vector will have the ability to "act" after each command the player inputs
-	creatures.push_back(goblin);
-	creatures.push_back(child);
+	actingEntities.push_back(goblin);
+	actingEntities.push_back(child);
+	actingEntities.push_back(cart);
+	actingEntities.push_back(slime);
 	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.5\n";
 }
 
@@ -138,11 +146,11 @@ World::~World() {
 	}
 	delete player;
 	entities.clear();
-	creatures.clear();
+	actingEntities.clear();
 }
 
 bool World::CheckGameOver()const {
-	return !player->IsAlive();
+	return !player->IsAlive() || gameFinished;
 }
 
 bool World::TryParseCommand(vector<string>& args)const {
@@ -296,9 +304,16 @@ bool World::TryParseCommand(vector<string>& args)const {
 	default:
 		res = false;
 	}
-	for (vector<Creature*>::const_iterator it = creatures.begin(); it != creatures.cend(); ++it) {
+	for (vector<Entity*>::const_iterator it = actingEntities.begin(); it != actingEntities.cend(); ++it) {
 		(*it)->TakeAction();
 	}
+
+	if (gameFinished) {
+		Println("==================================");
+		Println(player->name + " hops into his carriage with his mission complete, and while he's on his way to collect his reward, he notices the little girl hiding between his bearings, he's just gained a new friend");
+		Println("To be continued...");
+	}
+
 	return res;
 }
 

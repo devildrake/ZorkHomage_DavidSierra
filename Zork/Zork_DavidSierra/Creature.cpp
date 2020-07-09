@@ -5,7 +5,7 @@
 #include "Consumable.h"
 #include "Exit.h"
 
-Creature::Creature(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M, int critChances, int missChances) :Entity(name, desc, (Entity*)initialRoom) {
+Creature::Creature(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M, int critChances, int missChances, bool canDie) :Entity(name, desc, (Entity*)initialRoom) {
 	this->name = name;
 	description = desc;
 	this->parent = (Entity*)initialRoom;
@@ -19,6 +19,7 @@ Creature::Creature(const char* name, const char* desc, const char* unArmedWeapon
 	this->critChances = critChances;
 	this->missChances = missChances;
 	this->unArmedWeapon = unArmedWeapon;
+	this->canDie = canDie;
 	entityType = EntityType::CREATURE;
 }
 
@@ -126,7 +127,7 @@ void Creature::Equip(const vector<string>args) {
 
 void Creature::Inspect()const {
 	Println("==========================");
-	Println(name + (IsAlive() ? (IsStunned() ? " (Stunned)" : "") : " (Dead)"));
+	Println(name + (IsAlive() ? (IsStunned() ? " (Stunned)" : "") : (canDie ? " (Dead)" : "(unconscious")));
 	if (IsAlive()) {
 		cout << " - Health:" << health << "/" << max_health << endl
 			<< " - Attack:" << baseAttack.first + bonusAttack.first << " - " << baseAttack.second + bonusAttack.second << (weapon == nullptr ? "" : " with " + weapon->name + " equipped as weapon") << endl
@@ -150,7 +151,7 @@ void Creature::Look()const {
 int Creature::GetRandomAttack()const {
 	int minDamage = (baseAttack.first + bonusAttack.first);
 	int maxDamage = (baseAttack.second + bonusAttack.second);
-	return rand() % (maxDamage - minDamage) + minDamage;
+	return (maxDamage != minDamage) ? (rand() % (maxDamage - minDamage) + minDamage) : minDamage;
 }
 
 int Creature::GetRandomDefense()const {
@@ -189,7 +190,7 @@ void Creature::GetHurt(Creature* byWhom, bool critical) {
 	}
 
 	if (!IsAlive()) {
-		string deathMessage = name + " died ";
+		string deathMessage = name + (canDie ? " died " : " became unconscious ");
 
 		if (entitiesContained.size() > 0) {
 			deathMessage += "and dropped:";
@@ -198,10 +199,9 @@ void Creature::GetHurt(Creature* byWhom, bool critical) {
 		vector<string>itemsToDrop;
 		for (list<Entity*>::const_iterator it = entitiesContained.begin(); it != entitiesContained.cend(); ++it) {
 			Entity* e = *it;
-			if (e->entityType == EntityType::ITEM) {
-				itemsToDrop.push_back(e->name);
-				deathMessage += "\n - " + e->name;
-			}
+			itemsToDrop.push_back(e->name);
+			deathMessage += "\n - " + e->name;
+
 		}
 		Drop(itemsToDrop);
 		Println(deathMessage);
@@ -280,6 +280,7 @@ void Creature::TakeAction() {
 	if (!IsAlive())return;
 	if (combat_target != nullptr && !IsStunned()) {
 		ChaseAttacker();
+		TryToAttack(combat_target);
 	}
 	bool wasStunned = stunnedTurnsRemaining > 0;
 	stunnedTurnsRemaining = wasStunned ? stunnedTurnsRemaining - 1 : 0;
@@ -326,7 +327,7 @@ void Creature::Attack(const vector<string> args) {
 					combat_target = creatureToAttack;
 					TryToAttack(creatureToAttack);
 				} else {
-					Println("Leave the dead be");
+					Println(creatureToAttack->canDie ? "Leave the dead be" : "Leave the unconscious be");
 				}
 			}
 		}
@@ -422,6 +423,17 @@ void Creature::Drop(const vector<string>args) {
 					} else {
 						Println(name + "couldn't put " + eToDrop->name + " inside " + eToDropInto->name + " (" + eToDropInto->name + " is locked)");
 					}
+				} else if (eToDropInto->entityType == EntityType::CREATURE) {
+					if (armour == eToDrop) {
+						UnEquip(armour);
+						armour = nullptr;
+					} else if (weapon == eToDrop) {
+						UnEquip(weapon);
+						weapon = nullptr;
+					}
+					eToDrop->SetNewParent(eToDropInto);
+					Println(name + " put " + eToDrop->name + " inside " + eToDropInto->name);
+
 				} else {
 					Println(name + "couldn't put " + eToDrop->name + " inside " + eToDropInto->name + " (" + eToDropInto->name + " is not a container)");
 				}

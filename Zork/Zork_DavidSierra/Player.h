@@ -10,7 +10,7 @@ class Container;
 
 class Player : public Creature {
 public:
-	Player(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int h, int mh, int ba_m, int ba_M, int bd_m, int bd_M, int c_m, int c_M);
+	Player(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int h, int mh, int ba_m, int ba_M, int bd_m, int bd_M, int c_m, int c_M, bool canDie = true);
 	~Player();
 
 	Room* GetRoom() const;

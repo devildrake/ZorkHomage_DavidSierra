@@ -19,9 +19,10 @@ protected:
 	pair<int, int> bonusAttack;
 	pair<int, int> bonusDefense;
 public:
-	Creature(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M, int critChances, int missChances);
+	Creature(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int baseAttack_m, int baseAttack_M, int baseDefense_m, int baseDefense_M, int critChances, int missChances, bool canDie = true);
 	~Creature();
 	Room* GetRoom() const;
+	bool canDie;
 	const char* unArmedWeapon;
 	bool IsAlive() const;
 	bool IsStunned()const;

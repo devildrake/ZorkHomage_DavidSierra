@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Player.h"
 #include <stdlib.h>
 
 using namespace std;
@@ -11,13 +12,13 @@ class Exit;
 class World {
 public:
 	vector<Entity*> entities;
-	vector<Creature*> creatures;
+	vector<Entity*> actingEntities;
+
 	World();
 	~World();
-
+	bool gameFinished;
 	bool TryParseCommand(vector<string>& args)const;
 	bool CheckGameOver()const;
-private:
 	Player* player;
 
 };
