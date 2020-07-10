@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Cart.h"
 #include "ScaredChild.h"
+#include "HealthPotion.h"
 
 //Hardcoded keys that are later to compare and parses commands
 const string lookCmds[3] = { "look","l" };
@@ -23,117 +24,85 @@ const string unEquipCmds[2] = { "unequip","uneq" };
 const string examineCmds[4] = { "examine","ex","inspect","ins" };
 const string dropCmds[2] = { "drop", "place" };
 const string atkCmds[3] = { "strike","attack","kill" };
+const string consumeCmds[3] = { "use","consume","drink" };
 
 World::World() {
 	//Farm
-	Room* farmHouse = new Room("Farm house", "A small house, there's tools and furniture all over the place");
-	Room* farmAttic = new Room("Farm attic", "A dim light enters from between the planks and iluminates an attic with a few haystacks");
-	Room* farmEntrance = new Room("Farm entrance", "The only entrance to an apparently deserted farm");
-	Room* farmStables = new Room("Farm stables", "The farm's stables, there's blood pools where horses should be, as well as trails leading to holes in the walls going outside");
-	Room* farmOut = new Room("Outside of farm", "The entrance of a small farm");
+	Room* farmHouse = new Room(this, "Farm house", "A small house, there's tools and furniture all over the place");
+	Room* farmAttic = new Room(this, "Farm attic", "A dim light enters from between the planks and iluminates an attic with a few haystacks");
+	Room* farmEntrance = new Room(this, "Farm entrance", "The only entrance to an apparently deserted farm");
+	Room* farmStables = new Room(this, "Farm stables", "The farm's stables, there's blood pools where horses should be, as well as trails leading to holes in the walls going outside");
+	Room* farmOut = new Room(this, "Outside of farm", "The entrance of a small farm");
 
 	//Forest
-	Room* forestOutSkirts = new Room("Forest outskirts", "An entrance to the forest");
-	Room* forest = new Room("Forest", "A beautiful forest that seems neverending");
+	Room* forestOutSkirts = new Room(this, "Forest outskirts", "An entrance to the forest");
+	Room* forest = new Room(this, "Forest", "A beautiful forest that seems neverending");
 
 
-	Room* caveEntrance = new Room("Cave Entrance", "A hole in the ground appears to lead toward a cave");
-	Room* cave = new Room("Cave ", "A small cave lit by small holes on the walls");
-	Room* clearing = new Room("Clearing", "A clearing");
-	Room* woodsmanCabin = new Room("Woodsman cabin", "An old cabin full of dust and rusty tools");
-	Room* lake = new Room("Lake", "A big lake");
+	Room* caveEntrance = new Room(this, "Cave Entrance", "A hole in the ground appears to lead toward a cave");
+	Room* cave = new Room(this, "Cave ", "A small cave lit by small holes on the walls");
+	Room* clearing = new Room(this, "Clearing", "A clearing");
+	Room* woodsmanCabin = new Room(this, "Woodsman cabin", "An old cabin full of dust and rusty tools");
+	Room* lake = new Room(this, "Lake", "A big lake");
 
 
-	Exit* farmOutToFarmEntrance = new Exit("simple road", "marked by wheels", "simple road", "marked by wheels", Exit::Direction::EAST, farmOut, farmEntrance);
-	Exit* farmEntranceToFarmHouse = new Exit("broken door", "with bloodstains", "broken door", "with bloodstains", Exit::Direction::NORTH, farmEntrance, farmHouse);
-	Exit* farmEntranceToFarmStables = new Exit("double door", "with burning marks and partially scortched", "double door", "with burning marks and partially scortched", Exit::Direction::EAST, farmEntrance, farmStables);
-	Exit* farmOutToForestOutskirts = new Exit("road", "severly marked by wheels", "road", "severly marked by wheels", Exit::Direction::SOUTH, farmOut, forestOutSkirts);
-	Exit* forestOutskirtsToForest = new Exit("path", "", "path", "", Exit::Direction::SOUTH, forestOutSkirts, forest);
-	Exit* forestOutskirtsToCaveEntrance = new Exit("path", "which is partially hidden", "path", "", Exit::Direction::WEST, forestOutSkirts, caveEntrance);
-	Exit* caveEntranceToFarmOutskirts = new Exit("path", "", "path", "", Exit::Direction::NORTH, caveEntrance, farmOut, true);
-	Exit* caveEntranceToForest = new Exit("path", "", "climbable stretch", "hole leading upwards", Exit::Direction::SOUTH, caveEntrance, forest, true);
-	Exit* forestToClearing = new Exit("path", "", "path", "", Exit::Direction::EAST, forest, clearing);
-	Exit* clearingToForestOutskirts = new Exit("path", "", "path", "", Exit::Direction::NORTH, clearing, forestOutSkirts, true);
-	Exit* clearingToLake = new Exit("path", "", "path", "", Exit::Direction::EAST, clearing, lake);
-	Exit* clearingToWoodsmanCabin = new Exit("empty doorway", "", "empty doorway", "", Exit::Direction::SOUTH, clearing, woodsmanCabin);
-	Exit* lakeToForestOutskirts = new Exit("path", "", "path", "", Exit::Direction::NORTH, lake, forestOutSkirts, true);
-	Exit* cabinToLake = new Exit("window", "", "", "", Exit::Direction::EAST, woodsmanCabin, lake, true);
+	Exit* farmOutToFarmEntrance = new Exit(this, "simple road", "marked by wheels", "simple road", "marked by wheels", Exit::Direction::EAST, farmOut, farmEntrance);
+	Exit* farmEntranceToFarmHouse = new Exit(this, "broken door", "with bloodstains", "broken door", "with bloodstains", Exit::Direction::NORTH, farmEntrance, farmHouse);
+	Exit* farmEntranceToFarmStables = new Exit(this, "double door", "with burning marks and partially scortched", "double door", "with burning marks and partially scortched", Exit::Direction::EAST, farmEntrance, farmStables);
+	Exit* farmOutToForestOutskirts = new Exit(this, "road", "severly marked by wheels", "road", "severly marked by wheels", Exit::Direction::SOUTH, farmOut, forestOutSkirts);
+	Exit* forestOutskirtsToForest = new Exit(this, "path", "", "path", "", Exit::Direction::SOUTH, forestOutSkirts, forest);
+	Exit* forestOutskirtsToCaveEntrance = new Exit(this, "path", "which is partially hidden", "path", "", Exit::Direction::WEST, forestOutSkirts, caveEntrance);
+	Exit* caveEntranceToFarmOutskirts = new Exit(this, "path", "", "path", "", Exit::Direction::NORTH, caveEntrance, farmOut, true);
+	Exit* caveEntranceToForest = new Exit(this, "path", "", "climbable stretch", "hole leading upwards", Exit::Direction::SOUTH, caveEntrance, forest, true);
+	Exit* forestToClearing = new Exit(this, "path", "", "path", "", Exit::Direction::EAST, forest, clearing);
+	Exit* clearingToForestOutskirts = new Exit(this, "path", "", "path", "", Exit::Direction::NORTH, clearing, forestOutSkirts, true);
+	Exit* clearingToLake = new Exit(this, "path", "", "path", "", Exit::Direction::EAST, clearing, lake);
+	Exit* clearingToWoodsmanCabin = new Exit(this, "empty doorway", "", "empty doorway", "", Exit::Direction::SOUTH, clearing, woodsmanCabin);
+	Exit* lakeToForestOutskirts = new Exit(this, "path", "", "path", "", Exit::Direction::NORTH, lake, forestOutSkirts, true);
+	Exit* cabinToLake = new Exit(this, "window", "", "", "", Exit::Direction::EAST, woodsmanCabin, lake, true);
 
 	//Entity* key = new Entity("Key", "A small key with a horse sigil carved", woodsmanCabin);
-	Container* chest = new Container("Chest", "A small chest", woodsmanCabin);
-	Entity* key = new Entity("Key", "A small key with a horse sigil carved", chest);
-	Exit* farmHouseToFarmBasement = new Exit("trapdoor", "", "trapdoor", "", Exit::Direction::UP, farmHouse, farmAttic, false, key);
-	Entity* doll = new Entity("doll", "a raggedy doll that must belong to some kid", farmStables);
-	ScaredChild*child = new ScaredChild("child", "a trembling child", "hands", farmAttic, 5, 5, 0, 0, 0, 0, 50, 0, doll, nullptr, farmOut, "The child is quietly playing with her doll in the cart");
-	Entity* chisel = new Entity("chisel", "a magic chisel with goblin markings", child);
-	Exit* caveEntranceToCave = new Exit("hole", "leading down", "climbable stretch", "with a hole leading upwards", Exit::Direction::DOWN, caveEntrance, cave, false, chisel);
+	Container* chest = new Container(this, "Chest", "A small chest", woodsmanCabin);
+	Entity* key = new Entity(this, "Key", "A small key with a horse sigil carved", chest);
+	Exit* farmHouseToFarmBasement = new Exit(this, "trapdoor", "", "trapdoor", "", Exit::Direction::UP, farmHouse, farmAttic, false, key);
+	Entity* doll = new Entity(this, "doll", "a raggedy doll that must belong to some kid", farmStables);
+	ScaredChild*child = new ScaredChild(this, "child", "a trembling child", "hands", farmAttic, 5, 5, 0, 0, 0, 0, 50, 0, doll, nullptr, farmOut, "The child is quietly playing with her doll in the cart");
+	Entity* chisel = new Entity(this, "chisel", "a magic chisel with goblin markings", child);
+	Exit* caveEntranceToCave = new Exit(this, "hole", "leading down", "climbable stretch", "with a hole leading upwards", Exit::Direction::DOWN, caveEntrance, cave, false, chisel);
 
 	child->itemToDrop = chisel;
 
-	Entity* woodsManNote = new Entity("Note", "The note reads: Lovegood me old pal, I left an extra copy of the trapdoor I made for yer house in my cabin south of the clearing just in case you lost yours, since your kid is always playing with it, stay safe friend! I sure will once I'm away from here!", farmHouse);
+	Entity* woodsManNote = new Entity(this, "Note", "The note reads: Lovegood me old pal, I left an extra copy of the trapdoor I made for yer house in my cabin south of the clearing just in case you lost yours, since your kid is always playing with it, stay safe friend! I sure will once I'm away from here!", farmHouse);
 
-	Container* mailBox = new Container("Mailbox", "A rusty mailbox", farmOut);
-	Entity* welcomeLetter = new Entity("Letter", "The letter reads: \nDear Mr Lovegood,\nYour request for an adventurer for the apparent presence of goblins in your area has been notified to the guild and the payment has been accepted, Please stand by and try to stay safe until an adventurer arrives.\nSigned Adventurer Guild administration.", (Entity*)mailBox);
+	Container* mailBox = new Container(this, "Mailbox", "A rusty mailbox", farmOut);
+	Entity* welcomeLetter = new Entity(this, "Letter", "The letter reads: \nDear Mr Lovegood,\nYour request for an adventurer for the apparent presence of goblins in your area has been notified to the guild and the payment has been accepted, Please stand by and try to stay safe until an adventurer arrives.\nSigned Adventurer Guild administration.", (Entity*)mailBox);
 
 	//Goblin
-	Creature* goblin = new Creature("Goblin", "An unusually large and terryfing goblin", "claws", cave, 10, 10, 2, 5, 0, 0, 5, 20);
-	Equipable* armour = new Equipable("Armour", " A light armour with goblin symbols around it, it should make a fine proof of mission complete, you should place it in your cart", cave, ItemType::ARMOUR, pair<int, int>{0, 0}, pair<int, int>{3, 4});
+	Creature* goblin = new Creature(this, "Goblin", "An unusually large and terryfing goblin", "claws", cave, 10, 10, 2, 5, 0, 0, 5, 20);
+	Equipable* armour = new Equipable(this, "Armour", " A light armour with goblin symbols around it, it should make a fine proof of mission complete, you should place it in your cart", goblin, ItemType::ARMOUR, pair<int, int>{0, 0}, pair<int, int>{3, 4});
 	goblin->Equip(armour);
 
-	Creature* slime = new Creature("Slime", "A harmless slime", "body", lake, 10, 10, 3, 4, 0, 0, 5, 20);
-	Equipable* axe = new Equipable("Axe", "A rusty old axe", slime, ItemType::WEAPON, pair<int, int>{3, 5}, pair<int, int>{0, 0});
+	//Slime
+	Creature* slime = new Creature(this, "Slime", "A harmless slime", "body", lake, 10, 10, 3, 4, 0, 0, 5, 20);
+	Equipable* axe = new Equipable(this, "Axe", "A rusty old axe", slime, ItemType::WEAPON, pair<int, int>{4, 6}, pair<int, int>{2, 3});
+	HealthPotion* potion = new HealthPotion(this, "Potion", "A healing potion", slime, 15);
 
 	Cart* cart = new Cart(this, "Cart", "Your trusted old cart, pulled by your horse alone", farmOut, armour);
-	Equipable* dagger = new Equipable("Dagger", "A small rusty dagger", (Entity*)cart, ItemType::WEAPON, pair<int, int>{1, 4}, pair<int, int>{1, 2});
-	Entity* rock = new Entity("Rock", "An engraved rock that reads: property of Tanya", farmHouse);
-	Creature* deadFarmer = new Creature("Farmer", "A bloody farmer with multiple claw wounds", "Fists", farmStables, 10, 0, 0, 0, 0, 0, 0, 0);
+	Entity* rock = new Entity(this, "Rock", "An engraved rock that reads: property of Tanya, it has a hole in the shape of a key underneath it, but it's empty", farmHouse);
+	Creature* deadFarmer = new Creature(this, "Farmer", "A bloody farmer with multiple claw wounds", "Fists", farmStables, 10, 0, 0, 0, 0, 0, 0, 0);
 
-	player = new Player("Sheldor", "You and your lonely self", "fists", farmOut, 15, 15, 3, 5, 0, 2, 20, 10);
+	Entity* sign = new Entity(this, "Sign", "A sign that reads points in directions\n ->To the north: Lovegood Farm\n ->To the south: Woodsman cabin (ABANDONED)", clearing);
+	player = new Player(this, "Sheldor", "You and your lonely self", "fists", farmOut, 15, 15, 3, 5, 0, 2, 20, 10);
+	Equipable* dagger = new Equipable(this, "Dagger", "A small rusty dagger", (Entity*)player, ItemType::WEAPON, pair<int, int>{1, 4}, pair<int, int>{1, 2});
 
-	//All entities are pushed back into the entities for later deletion
-	entities.push_back(farmHouse);
-	entities.push_back(farmAttic);
-	entities.push_back(farmEntrance);
-	entities.push_back(farmStables);
-	entities.push_back(farmOut);
-	entities.push_back(forestOutSkirts);
-	entities.push_back(forest);
-	entities.push_back(caveEntrance);
-	entities.push_back(cave);
-	entities.push_back(clearing);
-	entities.push_back(woodsmanCabin);
-	entities.push_back(lake);
-	entities.push_back(farmOutToFarmEntrance);
-	entities.push_back(farmEntranceToFarmHouse);
-	entities.push_back(farmEntranceToFarmStables);
-	entities.push_back(farmHouseToFarmBasement);
-	entities.push_back(farmOutToForestOutskirts);
-	entities.push_back(forestOutskirtsToForest);
-	entities.push_back(forestOutskirtsToCaveEntrance);
-	entities.push_back(caveEntranceToCave);
-	entities.push_back(caveEntranceToFarmOutskirts);
-	entities.push_back(caveEntranceToForest);
-	entities.push_back(forestToClearing);
-	entities.push_back(clearingToForestOutskirts);
-	entities.push_back(clearingToLake);
-	entities.push_back(clearingToWoodsmanCabin);
-	entities.push_back(lakeToForestOutskirts);
-	entities.push_back(cabinToLake);
-	entities.push_back(deadFarmer);
-	entities.push_back(mailBox);
-	entities.push_back(key);
-	entities.push_back(cart);
-	entities.push_back(welcomeLetter);
-	entities.push_back(dagger);
-	entities.push_back(rock);
-	entities.push_back(goblin);
-	entities.push_back(chest);
+	Entity* picture = new Entity(this, "Picture", "A drawing of the farm you live in, on the backside it reads:\n-My stubborn brother, please remember to read this whenever you go out on adventures, remember to be careful cause you've got a home to come back to! And don't forget to equip your dagger! Love, Mia", cart);
+
 	//Creatures added to creatures vector will have the ability to "act" after each command the player inputs
 	actingEntities.push_back(goblin);
 	actingEntities.push_back(child);
 	actingEntities.push_back(cart);
 	actingEntities.push_back(slime);
-	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.5\n";
+	cout << "Welcome to a Zork homage by David Sierra! - Version 0.0.6\n";
 }
 
 World::~World() {
@@ -144,7 +113,6 @@ World::~World() {
 			delete *it;
 		}
 	}
-	delete player;
 	entities.clear();
 	actingEntities.clear();
 }
@@ -230,6 +198,8 @@ bool World::TryParseCommand(vector<string>& args)const {
 				player->health = 0;
 				Println(player->name + " died!");
 			}
+		} else if (CompareStrings(args[0], consumeCmds)) {
+			player->Consume(args);
 		} else {
 			res = false;
 		}
@@ -241,6 +211,11 @@ bool World::TryParseCommand(vector<string>& args)const {
 				//To do Must call entities' Look() override if entity with name arg[2] is found (Only works with one of the correct prepositions)
 				if (!CompareStrings(args[2], selfCmds)) {
 					Entity* lookTarget = player->GetRoom()->GetChildNamed(args[2].c_str());
+
+					if (lookTarget == nullptr) {
+						lookTarget = player->GetChildNamed(args[2].c_str());
+					}
+
 					if (lookTarget != nullptr) {
 						lookTarget->Look();
 					}

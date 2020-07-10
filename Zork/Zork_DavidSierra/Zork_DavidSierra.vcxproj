@@ -159,6 +159,7 @@
     <ClInclude Include="Equipable.h" />
     <ClInclude Include="Exit.h" />
     <ClInclude Include="GlobalMethods.h" />
+    <ClInclude Include="HealthPotion.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="NonPlayableCharacter.h" />
     <ClInclude Include="Player.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Equipable.cpp" />
     <ClCompile Include="Exit.cpp" />
     <ClCompile Include="GlobalMethods.cpp" />
+    <ClCompile Include="HealthPotion.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="NonPlayableCharacter.cpp" />
     <ClCompile Include="Player.cpp" />

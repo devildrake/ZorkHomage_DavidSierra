@@ -57,6 +57,9 @@
     <ClInclude Include="Cart.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="HealthPotion.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Creature.cpp">
@@ -102,6 +105,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="Cart.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthPotion.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

@@ -32,7 +32,6 @@ int main() {
 				auxString += " ";
 			}
 			if (CompareStrings(player_input, exitStrings)) {
-				cout << "Thanks for playing! Bye!\n";
 				break;
 			} else {
 				if (!aWorld.TryParseCommand(commandArguments)) {
@@ -47,6 +46,13 @@ int main() {
 
 		}
 
-	}
+	}	
+	
+	Println("===================");
+	Println("===================");
+	Println("Thanks for playing!");
+	Println("===================");
+	Println("===================");
+
 	return 1;
 }

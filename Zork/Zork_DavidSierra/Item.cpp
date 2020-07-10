@@ -1,6 +1,6 @@
 #include "Item.h"
 
-Item::Item(const char*name, const char*desc, Entity*parent, ItemType anItemType) :Entity(name, desc, parent) {
+Item::Item(World* world, const char*name, const char*desc, Entity*parent, ItemType anItemType) :Entity(world, name, desc, parent) {
 	entityType = EntityType::ITEM;
 	itemType = anItemType;
 }

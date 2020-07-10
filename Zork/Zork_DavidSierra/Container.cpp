@@ -1,6 +1,6 @@
 #include "Container.h"
 
-Container::Container(const char*name, const char*desc, Entity*parent, Entity* keyToUnlock) :Entity(name, desc, parent) {
+Container::Container(World* world, const char*name, const char*desc, Entity*parent, Entity* keyToUnlock) :Entity(world, name, desc, parent) {
 	entityType = EntityType::CONTAINER;
 
 	if (keyToUnlock != nullptr) {

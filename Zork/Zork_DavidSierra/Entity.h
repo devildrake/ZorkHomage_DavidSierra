@@ -15,17 +15,18 @@ enum EntityType {
 	NPC,
 	PLAYER
 };
-
+class World;
 //Base class from which all elements inherit some fields (name, description... as well as methods that all entitites must implement)
+//All entities have a reference to the World instance and add themselves to the entities vector
 class Entity {
 public:
 	EntityType entityType;
 	std::string name;
 	std::string description;
-
+	World* world;
 	Entity* parent;
 	list<Entity*> entitiesContained;
-	Entity(const char* name, const char* description, Entity* parent);
+	Entity(World* aWorld, const char* name, const char* description, Entity* parent);
 	virtual ~Entity();
 	virtual void Look() const;
 	virtual void TakeAction();

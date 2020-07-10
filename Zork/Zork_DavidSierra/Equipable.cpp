@@ -1,6 +1,6 @@
 #include "Equipable.h"
 
-Equipable::Equipable(const char* name, const char* desc, Entity* parent, ItemType type, std::pair<int, int>bonusAttack, std::pair<int, int>bonusDefense) : Item(name, desc, parent, type) {
+Equipable::Equipable(World* world, const char* name, const char* desc, Entity* parent, ItemType type, std::pair<int, int>bonusAttack, std::pair<int, int>bonusDefense) : Item(world, name, desc, parent, type) {
 	attack_bonus = bonusAttack;
 	defense_bonus = bonusDefense;
 }

@@ -1,7 +1,9 @@
 #include "Room.h"
 #include "Exit.h"
 #include "Creature.h"
-Room::Room(const char* name, const char* desc) :Entity(name, desc, nullptr) {
+
+
+Room::Room(World* world, const char* name, const char* desc) :Entity(world, name, desc, nullptr) {
 	entityType = EntityType::ROOM;
 }
 

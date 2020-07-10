@@ -6,6 +6,9 @@ class Room;
 
 const string directionStrings[6] = { "north","west","up","south","east","down" };
 
+
+//Entity type that allows creatures to travel between rooms, can be bidirectional (by default) or unidirectional 
+//A room mustn't have multiple bi directional exits to the same direction since it won't work properly
 class Exit :public Entity {
 
 public:
@@ -20,7 +23,7 @@ public:
 	bool uniDirectional, isLocked;
 	Entity* keyToUnlock;
 	Direction GetReverseDirection()const;
-	Exit(const char*name, const char* desc, const char* auxName, const char* auxDesc, Direction aDirection, Room* from, Room*to, bool uniDirectional = false, Entity* key = nullptr);
+	Exit(World* world, const char*name, const char* desc, const char* auxName, const char* auxDesc, Direction aDirection, Room* from, Room*to, bool uniDirectional = false, Entity* key = nullptr);
 	~Exit();
 	void Look() const;
 };

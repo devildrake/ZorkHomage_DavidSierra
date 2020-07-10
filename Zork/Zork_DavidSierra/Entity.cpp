@@ -1,12 +1,16 @@
 #include "Entity.h"
+#include "World.h"
 
-Entity::Entity(const char* name, const char* description, Entity* parent) {
+
+Entity::Entity(World* aWorld, const char* name, const char* description, Entity* parent) {
+	world = aWorld;
 	this->name = name;
 	this->description = description;
 	this->parent = parent;
 	if (parent != nullptr) {
 		parent->entitiesContained.push_back(this);
 	}
+	world->entities.push_back(this);
 }
 
 void Entity::TakeAction() {

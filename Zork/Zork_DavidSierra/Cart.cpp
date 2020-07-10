@@ -2,9 +2,8 @@
 #include "Room.h"
 #include "World.h"
 
-Cart::Cart(World* world, const char* name, const char* desc, Room* initialRoom, Entity* itemToBePlaced) :Container(name, desc, initialRoom) {
+Cart::Cart(World* world, const char* name, const char* desc, Room* initialRoom, Entity* itemToBePlaced) :Container(world, name, desc, initialRoom) {
 	this->itemToBePlaced = itemToBePlaced;
-	this->world = world;
 }
 
 Cart::~Cart() {

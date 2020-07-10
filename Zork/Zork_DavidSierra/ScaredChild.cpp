@@ -1,6 +1,6 @@
 #include "ScaredChild.h"
 #include "Room.h"
-ScaredChild::ScaredChild(const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int a_m, int a_M, int d_m, int d_M, int crit, int miss, Entity* doll, Entity* drop, Room* targetRoom, string newDesc, bool canDie) :NonPlayableCharacter(name, desc, unArmedWeapon, initialRoom, maxHealth, startingHealth, a_m, a_M, d_m, d_M, crit, miss, canDie) {
+ScaredChild::ScaredChild(World* world, const char* name, const char* desc, const char* unArmedWeapon, Room* initialRoom, int maxHealth, int startingHealth, int a_m, int a_M, int d_m, int d_M, int crit, int miss, Entity* doll, Entity* drop, Room* targetRoom, string newDesc, bool canDie) :NonPlayableCharacter(world, name, desc, unArmedWeapon, initialRoom, maxHealth, startingHealth, a_m, a_M, d_m, d_M, crit, miss, canDie) {
 	this->itemToDrop = drop;
 	this->doll = doll;
 	this->targetRoom = targetRoom;

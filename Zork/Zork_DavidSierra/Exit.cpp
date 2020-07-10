@@ -2,7 +2,7 @@
 #include "Room.h"
 #include "GlobalMethods.h"
 
-Exit::Exit(const char* name, const char* desc, const char* auxName, const char* auxDesc, Exit::Direction aDirection, Room* from, Room* to, bool uniDirectional, Entity* key) : Entity(name, desc, nullptr) {
+Exit::Exit(World* world, const char* name, const char* desc, const char* auxName, const char* auxDesc, Exit::Direction aDirection, Room* from, Room* to, bool uniDirectional, Entity* key) : Entity(world, name, desc, nullptr) {
 	direction = aDirection;
 	this->from = from;
 	this->to = to;
