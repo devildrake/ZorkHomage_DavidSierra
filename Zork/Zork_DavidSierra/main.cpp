@@ -46,13 +46,13 @@ int main() {
 
 		}
 
-	}	
-	
+	}
+
 	Println("===================");
 	Println("===================");
 	Println("Thanks for playing!");
 	Println("===================");
 	Println("===================");
-
+	system("pause");
 	return 1;
 }
