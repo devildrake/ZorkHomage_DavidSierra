@@ -35,7 +35,6 @@ bool CompareStrings(const string & str1, const string &str2) {
 bool CompareStrings(const string&str1, const string* str2) {
 	for (size_t i = 0; i < str2->length(); i++) {
 		if (CompareStrings(str1, str2[i])) {
-			//cout << str1 << "==" << *str2 << endl;
 			return true;
 		}
 	}

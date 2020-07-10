@@ -9,7 +9,6 @@ Creature::Creature(World* world, const char* name, const char* desc, const char*
 	this->name = name;
 	description = desc;
 	this->parent = (Entity*)initialRoom;
-	//this->parent->entitiesContained.push_back(this);
 	max_health = maxHealth;
 	health = startingHealth;
 	baseAttack.first = baseAttack_m;
@@ -448,8 +447,6 @@ void Creature::UnLock(const vector<string> args) {
 						if ((containerToOpen)->keyToUnlock == objToOpenWith) {
 							containerToOpen->isLocked = false;
 							Println(name + " used " + objToOpenWith->name + " to open " + entityToOpen->name);
-							//containerToOpen->keyToUnlock = nullptr;
-							//delete key?
 						} else {
 							Println(name + " couldn't use " + objToOpenWith->name + " to open " + entityToOpen->name + (" (Wrong key)"));
 						}
@@ -462,8 +459,6 @@ void Creature::UnLock(const vector<string> args) {
 						if ((exitToOpen)->keyToUnlock == objToOpenWith) {
 							exitToOpen->isLocked = false;
 							Println(name + " used " + objToOpenWith->name + " to open " + entityToOpen->name);
-							//containerToOpen->keyToUnlock = nullptr;
-							//delete key?
 						} else {
 							Println(name + " couldn't use " + objToOpenWith->name + " to open " + entityToOpen->name + (" (Wrong key)"));
 						}

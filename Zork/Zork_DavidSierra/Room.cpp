@@ -13,7 +13,6 @@ Room::~Room() {
 
 void Room::Look() const {
 	cout << name << endl << description << endl;
-	//To Do call each of the entitiesContained (except player) Look() method
 
 	for (list<Entity*>::const_iterator it = entitiesContained.begin(); it != entitiesContained.cend(); ++it) {
 		Entity* e = *it;
@@ -75,16 +74,5 @@ Exit* Room::GetExitInDirection(const char* dir) const {
 	}
 	return res;
 }
-
-
-//Exit* Room::GetExitToDirection(const char* dir)const {
-//	Exit* res = nullptr;
-//	//Exit* res = nullptr;
-//	//for (vector<Room*>::iterator it = exits.begin(); it != exits.cend() && res == nullptr; ++it) {
-//	//	res = *it;
-//	//}
-//	//return res;
-//	return res;
-//}
 
 

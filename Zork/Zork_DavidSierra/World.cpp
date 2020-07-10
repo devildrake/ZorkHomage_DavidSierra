@@ -61,7 +61,6 @@ World::World() {
 	Exit* lakeToForestOutskirts = new Exit(this, "path", "", "path", "", Exit::Direction::NORTH, lake, forestOutSkirts, true);
 	Exit* cabinToLake = new Exit(this, "window", "", "", "", Exit::Direction::EAST, woodsmanCabin, lake, true);
 
-	//Entity* key = new Entity("Key", "A small key with a horse sigil carved", woodsmanCabin);
 	Container* chest = new Container(this, "Chest", "A small chest", woodsmanCabin);
 	Entity* key = new Entity(this, "Key", "A small key with a horse sigil carved", chest);
 	Exit* farmHouseToFarmBasement = new Exit(this, "trapdoor", "", "trapdoor", "", Exit::Direction::UP, farmHouse, farmAttic, false, key);
@@ -208,7 +207,6 @@ bool World::TryParseCommand(vector<string>& args)const {
 	case 3: {// Some commands that can admit prepositions
 		if (CompareStrings(args[0], lookCmds)) {			//LOOK
 			if (CompareStrings(args[1], lookPpsts)) {
-				//To do Must call entities' Look() override if entity with name arg[2] is found (Only works with one of the correct prepositions)
 				if (!CompareStrings(args[2], selfCmds)) {
 					Entity* lookTarget = player->GetRoom()->GetChildNamed(args[2].c_str());
 
