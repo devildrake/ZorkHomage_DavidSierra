@@ -12,27 +12,38 @@ The game works similarly to the original Zork, there are commands that can be un
 
 Available actions include:
 
-look/l ->If typed alone, relevant imformation of the room will be displayed. typing look followed by the name of an element in the current room will print specific information on that element. You can also look at yourself by typing: look self/me.
-go/walk/move ->Player moves towards a direction, changing where he's at -> Commands accepted are Go + "Direction" Directions accepted are north, south, east, west, up and down.
-clear/wipe/cls/clr -> Console is cleared.
-pick/grab/take/get -> if followed by the name of an element in the room, it adds it to player's inventory, if followed by "from" + the name of some element in the room, said item will be placed in the player's inventory.
-ivnentory/inv -> displays names of all elements in the player's inventory on the console.
-unlock/open -> Allows player to open closed containers/doors. Example: Open/Unlock door with key.
-equip/eq -> if followed by the name of an Equipable item in the players inventory, said item is equipped as weapon/armour and its stats are added to the bonus stats of the player.
-unequip/uneq -> if followed by the name of an equipped item, said item is unequipped and its stats are removed from the bonus stats of the player.
-examine/ex/inspect/ins -> if followed by the name of any Creature or equipment in the scene, it displays its properties (health, attack, defense) on the console. 
-drop/place -> if followed by the name of any element inside the player's inventory, said element is "placed" on the room the player's at, it can also be used to place items inside containers. Example: place note inside mailbox
-strike/attack/kill -> if followed by the name of any creature in the player's room, it attacks said creature and deals damage to it.
-use/consume/drink -> if followed by the name of a consumable in the player's inventory, said consumable will use its effect on the player. Example: Drink potion -> This will result in player being healed.
+- look/l ->If typed alone, relevant imformation of the room will be displayed. typing look followed by the name of an element in the current room will print specific information on that element. You can also look at yourself by typing: look self/me.
 
-Game can be closed by typing in exit/close/quit
+- go/walk/move ->Player moves towards a direction, changing where he's at -> Commands accepted are Go + "Direction" Directions accepted are north, south, east, west, up and down.
+
+- clear/wipe/cls/clr -> Console is cleared.
+
+- pick/grab/take/get -> if followed by the name of an element in the room, it adds it to player's inventory, if followed by "from" + the name of some element in the room, said item will be placed in the player's inventory.
+
+- ivnentory/inv -> displays names of all elements in the player's inventory on the console.
+
+- unlock/open -> Allows player to open closed containers/doors. Example: Open/Unlock door with key.
+
+- equip/eq -> if followed by the name of an Equipable item in the players inventory, said item is equipped as weapon/armour and its stats are added to the bonus stats of the player.
+
+- unequip/uneq -> if followed by the name of an equipped item, said item is unequipped and its stats are removed from the bonus stats of the player.
+
+- examine/ex/inspect/ins -> if followed by the name of any Creature or equipment in the scene, it displays its properties (health, attack, defense) on the console. 
+
+- drop/place -> if followed by the name of any element inside the player's inventory, said element is "placed" on the room the player's at, it can also be used to place items inside containers. Example: place note inside mailbox.
+
+- strike/attack/kill -> if followed by the name of any creature in the player's room, it attacks said creature and deals damage to it.
+
+- use/consume/drink -> if followed by the name of a consumable in the player's inventory, said consumable will use its effect on the player. Example: Drink potion -> This will result in player being healed.
+
+- Game can be closed by typing in exit/close/quit
 
 Killed creatures drop their entire inventory.
 There's chances of missing attacks as well as dealing critical hits, critical hits stun creatures.
 A creature that's been attacked will chase the player and attack him, if the player leaves a creature stunned in a room and gets two rooms away, said entity willl not chase him anymore.
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SPOILERS
 
@@ -82,15 +93,15 @@ The main path to finish the game is to use the following commands:
 - Go north
 - Drop Armour inside cart
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Github repositroy link: https://github.com/devildrake/ZorkHomage_DavidSierra
 
 The game has been developed using a GNU GENERAL PUBLIC LICENSE v3.0 which lets people do almost anything they want with your project, except distributing closed source versions.
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 Development notes
